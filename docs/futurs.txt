@@ -1,0 +1,25 @@
+/*
+    [On Registration Form]
+        - get user ip
+        [Helper] $.getJSON("https://api.ipify.org?format=json",function(data) {return data.ip})
+*/
+
+Creating Products DataBase;
+
+/*
+
+    `Item_ID` int(11) NOT NULL,
+    `Name` varchar(255) NOT NULL,
+    `Description` text NOT NULL,
+    `Price` varchar(255) NOT NULL,
+    `Add_Date` date NOT NULL,
+    `Country_Made` varchar(255) NOT NULL,
+    `Image` varchar(255) NOT NULL,
+    `Status` varchar(255) NOT NULL,
+    `Rating` smallint(6) NOT NULL,
+    `Approve` tinyint(4) NOT NULL DEFAULT '0',
+    `Cat_ID` int(11) NOT NULL,
+    `Member_ID` int(11) NOT NULL,
+    `tags` varchar(255) DEFAULT NULL
+
+*/

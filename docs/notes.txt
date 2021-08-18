@@ -1,0 +1,20 @@
+- Project(shop) [Normal Admin];
+    *Account Setting;
+    *Log Page [Export];
+    *Statistics Page;
+
+- Project User Side[Rest All features];
+    *Login/Register;
+
+
+
+
+
+// [important] //
+    - Check if is logged in is real admin On All pages On Admin Pannel!
+    - fix date when we try to update a product
+
+
+
+
+fix login
