@@ -11,6 +11,9 @@ $pageName = 'Profile';
 include 'init.php';
 checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 
+checkMaintenanceMode();
+
+
 ?>
 
 <?php 
@@ -18,7 +21,7 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 
 
     if($_SERVER['REQUEST_METHOD'] === "POST"){
-        if(strlen($_POST['password']) >= 8 and strlen($_POST['password2']) >= 8){
+        if(isset($_SESSION['password']) and isset($_SESSION['password2'])  and strlen($_POST['password']) >= 8 and strlen($_POST['password2']) >= 8){
             if(checkIssetFields($_POST , ['fullName','email','password','password2'])){
 
                 $fullName = clean($_POST['fullName']);
@@ -39,7 +42,7 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
                 }
                 
             }
-        }else{
+        }elseif(isset($_SESSION['fullName']) and isset($_SESSION['email']) and strlen($_POST['fullName']) >= 1 and strlen($_POST['email']) >= 1){
             if(checkIssetFields($_POST , ['fullName','email'])){
                 
                 $fullName = clean($_POST['fullName']);
@@ -52,6 +55,49 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 
 
             }
+        }elseif(isset($_POST['updateImage']) AND !empty($_POST['updateImage'])){
+
+            if(checkImage('img','name')){
+                echo doAlert(1,'Please Enter A Valid Image','');
+                header('location:profile.php');
+            }
+            if(!empty($_SESSION['picture'])){
+                $directory = dirname(__DIR__).'\shop\data\users\\' . $_SESSION['picture'];
+                unlink($directory);
+    
+            }
+            $location = dirname(__FILE__) . "\data\users\\";
+
+            $files = scandir(dirname(__FILE__) . "\data\users\\", SCANDIR_SORT_DESCENDING);
+
+            $newest_file = $files[0];
+
+            $produtImageName = intval(explode('.',$files[0])[0]);
+
+            $produtImageName ++;
+
+            $inputNameImage = $_FILES['img']['name'];
+
+            $numberOftimes = substr_count($inputNameImage,'.') - 1;
+
+            $inputNameImage = preg_replace('/\./','', $inputNameImage,$numberOftimes);
+            
+            $produtImageName = strval($produtImageName) . '.'. strtolower(explode('.',$inputNameImage)[1]);
+
+            $uploadfile = $location . basename( $produtImageName );
+
+            if(!move_uploaded_file($_FILES['img']['tmp_name'],$uploadfile)){
+                echo doAlert(0,'','Please try again!');
+            }
+
+            $product_image = $produtImageName;
+            
+
+            $connection = $conn->prepare("UPDATE shop.users SET `image` = ?   WHERE `user_id` = ?");
+            $connection->execute([$product_image,$_SESSION['user_id']]);
+
+            $_SESSION['picture'] = $product_image;
+
         }
     }
 
@@ -100,7 +146,6 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
         <div class="panel-body">
             <div class="row">
 
-
             <?php             
                 $products = fetchMyColumn('product_id,Name,Price,Description,Added_Date,Status,Image','shop.products',"Added_by = " .$_SESSION['user_id']. ' ORDER BY product_id DESC');
                 if(!$products){
@@ -113,7 +158,7 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
                     if(!$status){
                         echo '<span class="approve-status">Waiting Approval</span>';
                     };
-                    echo'<span class="price-tag">$121</span><img class="img-responsive" style="width: 250px;height: 250px;" src="data/uploads/'.$product['Image'].'" alt="">';
+                    echo'<span class="price-tag">$121</span><img class="img-responsive" style="width: 250px;height: 250px;" src="data/uploads/' . $product['Image'] .'" alt="">';
                     echo '<div class="caption">';
                     echo '<h3><a href="product.php?itemid='.$product['product_id'].'">'.$product['Name'].'</a></h3>';
                     echo '<p>'.$product['Description'].'</p>';
@@ -163,7 +208,26 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
                     <center><input type="submit" id="btnAdd" class="btn btn-primary" value="Add Category"></center>
 
                 </form>
+                <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data">
+                    <br>
+                    <img style="height: 100px;width:100px;" class="img-responsive img-thumbnail img-circle center-block" src="<?php 
+                        if(isset($_SESSION['picture']) and !empty($_SESSION['picture'])){
+                            echo 'data/users/' . $_SESSION['picture'];
+                        }else{
+                            echo 'img.png';
+                        }
+                    ?>" alt="">
+                    <br>
+                    <div class="form-group">
+                        
+                    <input type="file"  class="form-control" name="img" accept="image/*" required>
 
+                </div>
+
+
+                    <center><input type="submit" name="updateImage" class="btn btn-primary" value="Update Picture"></center>
+
+                </form>
             </div>
         </div>
 
@@ -203,10 +267,7 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
                         echo '<p class="col-sm-6">Sorry You Don\'t Have Any Comment</p>';
                     }
                 foreach($data as $comment){
-                    if($comment['userName'] !== $_SESSION['username']){
                         echo "<p  class='text'>Comment: \"{$comment['comment_text']}\" Added By \"{$comment['userName']}\" On Product:<a href='product.php?itemid={$comment['productId']}'>\"{$comment['productName']}\"</a> </p>";
-
-                    }
                 }
 ?>
         

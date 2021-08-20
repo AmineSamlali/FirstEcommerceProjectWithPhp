@@ -164,6 +164,33 @@
                                                 <option value='1'>On</option>
                                             </select>
                                         </div>  
+                                        <div class="form-group">
+                                            <label for="productRating">Product Rating</label>
+                                            <select name="productRatingEdite" id="productRatingX"
+                                                class="form-control" placeholder="Add Rating To the product"
+                                                autocomplete="off" required>
+                                                <option value="">...</option>
+                                                <option value="1">New</option>
+                                                <option value="2">Like New</option>
+                                                <option value="3">Used</option>
+                                                <option value="4">Very Old</option>
+                                            </select>
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label for="productImageX">Product Image</label>
+                                            <input name="productTagsEdite" id="productImageX" accept="*/image" type="file"
+                                                class="form-control"
+                                                required>
+                                        </div>
+
+<!-- 
+                                        <div class="form-group">
+                                            <label for="productPicture">Add Picture</label>
+                                            <input type="file" accept="*/image" name="img" class="form-control" id="productPicture" required>
+                                        </div>   -->
+
 
                                         <center><input type="submit" id="btnAdd" class="btn btn-primary"
                                                 value="Add Product"></center>
@@ -211,7 +238,7 @@
                                         <div class="form-group">
                                             <label for="productDesc">Added_Date</label>
                                             <input name="productAddedDateEdite" id="productAddedDate"
-                                                type="datetime-local" class="form-control"
+                                                type="datetime-local" step="any" class="form-control"
                                                 placeholder="Add Description To the product" autocomplete="off">
                                         </div>
 
@@ -276,8 +303,29 @@
                                                 <option value='1'>On</option>
 
                                             </select>
-                                        </div>  
+                                        </div> 
 
+
+                                        <div class="form-group">
+                                            <label for="productRating">Product Rating</label>
+                                            <select name="productRatingEdite" id="productRating"
+                                                class="form-control" placeholder="Add Rating To the product"
+                                                autocomplete="off" required>
+                                                <option value="">...</option>
+                                                <option value="1">New</option>
+                                                <option value="2">Like New</option>
+                                                <option value="3">Used</option>
+                                                <option value="4">Very Old</option>
+                                            </select>
+                                        </div>
+                                        <img style="height: 80px;width:80px;" class="img-responsive img-thumbnail img-circle center-block" src="" id="curretImage">
+
+                                        <div class="form-group">
+                                            <label for="productRating">Product Image</label>
+                                            <input name="img" id="productImage" accept="*/image" type="file"
+                                                class="form-control"
+                                                autocomplete="off" value="img.png" title="Leave it,if you don't Wanna change the image">
+                                        </div> 
 
                                         <center><input type="submit" id="btnAddEdite" class="btn btn-primary"
                                                 value="Edite Product"></center>
@@ -315,7 +363,6 @@ function editeProduct(e) {
         productId: productId
     }, (res) => {
         let data = JSON.parse(res);
-        console.log(data);
         const newTime = (data[0]['Added_Date'].toLocaleString("sv-SE") + '').replace(' ', 'T');
         $('#productName').val(data[0]['Name']);
         $('#productDesc').val(data[0]['Description']);
@@ -325,8 +372,9 @@ function editeProduct(e) {
         $('#productCategory').val(data[0]['Category']);
         $('#productTags').val(data[0]['tags']);
         $('#productMade').val(data[0]['Country_Made']);
-        $('#productStatus').val(data[0]['Status'])
-
+        $('#productStatus').val(data[0]['Status']);
+        $('#productRating').val(data[0]['Rating']);
+        $('#curretImage').attr('src' , window.location.origin +"/server/shop/data/uploads/" + data[0]['Image']);
     })
 }
 
@@ -336,59 +384,88 @@ function deleteProduct(e) {
         formType: 'delete-product',
         'productId': productId
     }, (res) => {
+        console.log(res);
         if (res == 1) {
             location.reload()
         }
     })
 }
 
-$('#newProduct').submit(function(e) {
+
+
+$('#newProduct').on('submit', function (e) {
     e.preventDefault();
-    $.post('ajax_check.php', {
-        formType: "addNewProduct",
-        name: $('#productNameX').val(),
-        description: $('#productDescX').val(),
-        price: $('#productPriceX').val(),
-        addedDate: $('#productAddedDateX').val(),
-        addedBy: $('#productAddedByX').val(),
-        category: $('#productCategoryX').val(),
-        madeOn: $('#productMadeX').val(),
-        tags: $('#productTagsX').val(),
-        status:$('#productStatusX').val()
-    }, (data) => {
-        if (data == 1) {            
-            location.reload()
-        } else {
-            alert("Please Try Again!")
+    let files = new FormData(), // you can consider this as 'data bag'
+        url = 'ajax_check.php';
+    files.append('formType', 'addNewProduct'); 
+    files.append('name', $('#productNameX').val()); 
+    files.append('description', $('#productDescX').val()); 
+    files.append('price', $('#productPriceX').val()); 
+    files.append('addedDate', $('#productAddedDateX').val()); 
+    files.append('addedBy', $('#productAddedByX').val()); 
+    files.append('category', $('#productCategoryX').val()); 
+    files.append('madeOn', $('#productMadeX').val()); 
+    files.append('tags', $('#productTagsX').val()); 
+    files.append('status', $('#productStatusX').val()); 
+    files.append('rating', $('#productRatingX').val()); 
+    files.append('img', $('#productImageX')[0].files[0]); 
+    $.ajax({
+        type: 'post',
+        url: url,
+        processData: false,
+        contentType: false,
+        data: files,
+        success: function (response) {
+
+            if(response == 1){
+                location.reload();
+            }else{
+                alert("Please Enter True Values");
+            }
+
         }
 
-    })
-
-
-})
-
-$('#EditeProduct').submit(function(e) {
-    e.preventDefault();
-    $.post('ajax_check.php', {
-        formType: "EditeProduct",
-        product_Id: product,
-        name: $('#productName').val(),
-        description: $('#productDesc').val(),
-        price: $('#productPrice').val(),
-        addedDate: $('#productAddedDate').val(),
-        addedBy: $('#productAddedBy').val(),
-        category: $('#productCategory').val(),
-        madeOn: $('#productMade').val(),
-        tags: $('#productTags').val(),
-        status:$('#productStatus').val()
-    }, (data) => {
-        console.log(data);
-        if (data == 1) {
-            location.reload();
-        }
     });
+    }
+);
 
-});
+
+$('#EditeProduct').on('submit', function (e) {
+    e.preventDefault();
+    let files = new FormData(), // you can consider this as 'data bag'
+        url = 'ajax_check.php';
+    files.append('formType', 'EditeProduct'); 
+    files.append('product_Id', product); 
+    files.append('name', $('#productName').val()); 
+    files.append('description', $('#productDesc').val()); 
+    files.append('price', $('#productPrice').val()); 
+    files.append('addedDate', $('#productAddedDate').val()); 
+    files.append('addedBy', $('#productAddedBy').val()); 
+    files.append('category', $('#productCategory').val()); 
+    files.append('madeOn', $('#productMade').val()); 
+    files.append('tags', $('#productTags').val()); 
+    files.append('status', $('#productStatus').val()); 
+    files.append('rating', $('#productRating').val()); 
+    files.append('img', $('#productImage')[0].files[0]); 
+    $.ajax({
+        type: 'post',
+        url: url,
+        processData: false,
+        contentType: false,
+        data: files,
+        success: function (response) {
+            if(response == 1){
+                location.reload();
+            }else{
+                alert("Please Enter True Values");
+            }
+
+        }
+
+    });
+    }
+);
+
 
 
 function checkIfIs(e){

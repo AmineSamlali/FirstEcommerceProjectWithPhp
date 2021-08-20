@@ -163,7 +163,7 @@
             }
             if ($check > 0){
                 $e = addLog('Show Product Info: ' , ['fieldName'=>'product_id' ,'table' => 'shop.products' , 'value' => $_POST['productId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
-                $data = fetchMyColumn('Name,Description,price,Added_Date,Added_by,Category,tags,Country_Made,Status', 'shop.products' , "product_id = " . $_POST['productId']);
+                $data = fetchMyColumn('Name,Description,price,Added_Date,Added_by,Category,tags,Country_Made,Status,Rating,Image', 'shop.products' , "product_id = " . $_POST['productId']);
                 echo json_encode($data);
 
             }
@@ -175,19 +175,49 @@
                 ]);
                 if($check >  0){
                     $e = addLog('Deleting Product: ' , ['fieldName'=>'product_id' ,'table' => 'shop.products' , 'value' => $_POST['productId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
-
+                    $image = fetchMyColumn('Image','shop.products','product_id="'.$_POST['productId'].'"','data','One');
+                    $directory = dirname(__DIR__).'\data\uploads\\' . $image['Image'];
+                    unlink($directory);
                     $connection = $conn->prepare("DELETE FROM shop.products WHERE product_id = ?");
                     $connection->execute([$_POST['productId']]);
                     $res = $connection->rowCount();
                     echo $res;
+
                 }
             }
 
         }elseif($_POST['formType'] === 'addNewProduct'){
-            
-            if(checkIssetFields($_POST, ['name','description' , 'price' ,'addedDate' ,'addedBy' ,'category' , 'tags','madeOn'])){
+            if(checkIssetFields($_POST, ['name','description' , 'price' ,'addedDate' ,'addedBy' ,'category' , 'tags','madeOn','rating'])){
+                if(!isset($_FILES['img'])){
+                    echo 0;
+                    exit();
+                }
+                    
+                
+                $location = dirname(__DIR__) . "\data\uploads\\";
+                $files = scandir($location, SCANDIR_SORT_DESCENDING);
+                $newest_file = $files[0];
+                $produtImageName = intval(explode('.',$files[0])[0]);
+                $produtImageName ++;
+
+                $inputNameImage = $_FILES['img']['name'];
+
+                $numberOftimes = substr_count($inputNameImage,'.') - 1;
+
+                $inputNameImage = preg_replace('/\./','', $inputNameImage,$numberOftimes);
+                
+                $produtImageName = strval($produtImageName) . '.'. strtolower(explode('.',$inputNameImage)[1]);
+
+                $uploadfile = $location . basename( $produtImageName );
+
+                if(!move_uploaded_file($_FILES['img']['tmp_name'],$uploadfile)){
+                    echo doAlert(0,'','Please try again!');
+                }
+
+                $product_image = $produtImageName;
+
                 addLog('Add New Product: "' .$_POST['name'].'"' ,$_SESSION['username'] );
-                $connection = $conn->prepare("INSERT INTO shop.products(Name,Description,Price,Added_Date,Country_Made,status,Category,Added_by,tags) VALUES(?,?,?,?,?,?,?,?,?)");
+                $connection = $conn->prepare("INSERT INTO shop.products(Name,Description,Price,Added_Date,Country_Made,status,Category,Added_by,tags,Rating,Image) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
                 $connection->execute(
                     [$_POST['name'],
                     $_POST['description'],
@@ -197,23 +227,51 @@
                     $_POST['status'],
                     $_POST['category'],
                     $_POST['addedBy'],
-                    $_POST['tags']]);
-
+                    $_POST['tags'],
+                    $_POST['rating'],
+                    $product_image,
+                ]);
                 $status = $connection->rowCount();
                 echo $status;
             }
 
         }elseif($_POST['formType'] === 'EditeProduct'){
-            if (checkIssetFields($_POST, ['product_Id','name','description' , 'price' ,'addedDate' ,'addedBy' ,'category' , 'tags','madeOn' , 'status'])) {
+            if (checkIssetFields($_POST, ['product_Id','name','description' , 'price' ,'addedDate' ,'addedBy' ,'category' , 'tags','madeOn' , 'status','rating'])) {
                 $check = checkField('shop.products' , '*' , ['filed_name' => 'product_id','value' => clean($_POST['product_Id'])]);
-                if($check > 0){ 
+                
+                if($check > 0){
                     addLog('editing Category: "' .$_POST['name'].'"' ,$_SESSION['username'] );
-                    $connection = $conn->prepare("UPDATE shop.products SET `Name` = ?, `Description` = ? , `Price` =?, `Added_Date` = ? ,`Country_Made`= ?,`Added_by`=?,`tags`=? ,`Status` = ? WHERE `product_id` = ? ");
-                    $connection->execute([$_POST['name'] , $_POST['description'] , $_POST['price'] ,$_POST['addedDate'],$_POST['madeOn'], $_POST['addedBy'], $_POST['tags'],$_POST['status'],$_POST['product_Id']]);
-                    $data = $connection->rowCount();
-                    echo $data;
-                }
+                    $method = cleanListOfFieldes($_POST);
+                    if(isset($_FILES['img'])){
+                        // get Current Image
+                        $currentImage = fetchMyColumn('Image','shop.products','product_id = '. $_POST['product_Id'],'data','One')['Image'];
+                        // get Name of The Current Image and store it
+                        $location = dirname(__DIR__) . "\data\uploads\\" . $currentImage; 
+                        // unlick it
+                        unlink($location);
+                        // move new image and rename it put(oldImageName);
+                        move_uploaded_file($_FILES['img']['tmp_name'],dirname(__DIR__) . "\data\uploads\\" . basename($currentImage));
+                        // sql
+                        $image = ", `Image` = ?";
+                    }else{
+                        $image = '';
+                    };
+                    $connection = $conn->prepare("UPDATE shop.products SET `Name` = ?, `Description` = ? , `Price` =?, `Added_Date` = ? ,`Country_Made`= ?,`Added_by`=?,`tags`=? ,`Status` = ? ,`Rating` = ? $image WHERE `product_id` = ? ");
+                    if(!empty($image)){
+                        $container = [$method['name'] , $method['description'] , $method['price'] ,$method['addedDate'],$method['madeOn'], $method['addedBy'], $method['tags'],$method['status'],$method['rating'],$currentImage,$method['product_Id']];
+                    }else{
+                        $container = [$method['name'] , $method['description'] , $method['price'] ,$method['addedDate'],$method['madeOn'], $method['addedBy'], $method['tags'],$method['status'],$method['rating'],$method['product_Id']];
 
+                    }
+                    $connection->execute($container);
+                    $data = $connection->rowCount();
+                    if(!empty($image) and $data == 0){
+                        echo 1;
+                    }else{
+                        echo $data;
+                    }
+                    
+                }
             }
         }elseif($_POST['formType'] === 'checkFor-user&categorys'){
             if(sqlCount('username','shop.users') and sqlCount('Name','shop.categorys')){
@@ -292,12 +350,29 @@
             $imageName = strval(random_int(10000,213144)) .'.'. $resource;
             if(isset($_FILES['fileName'])){
                 if(move_uploaded_file($_FILES['fileName']['tmp_name'],$target_dir.$imageName)){
+                    if(!empty($_SESSION['cash'])){
+                        unlink( $target_dir . $_SESSION['cash']);
+                    }
+                    
+                    $_SESSION['cash'] = $imageName;
+
                     echo 'addProductCash/' . $imageName;
+                    
                 }else{
                     echo 0;
                 }
     
             }
+            
+        }elseif($_POST['formType'] == 'setting-update'){
+
+            if( isset($_POST['email']) and isset($_POST['maintenanceMode']) and $_POST['maintenanceMode'] == 1 or $_POST['maintenanceMode'] == 0 ){
+                $connection = $conn->prepare("UPDATE shop.settings SET maintenance_mode = ?, email = ? WHERE id = ?");
+                $connection->execute([$_POST['maintenanceMode'],$_POST['email'] , 1]);
+            }
+        }elseif($_POST['formType'] == 'delete-log'){
+            $connection = $conn->prepare("DELETE FROM shop.log");
+            $connection->execute();
             
         }
     }

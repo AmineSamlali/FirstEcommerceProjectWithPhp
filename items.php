@@ -9,13 +9,14 @@ session_start();
 $pageName = 'Add New Product';
 include 'init.php';
 checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
+checkMaintenanceMode();
 
 ?>
 
 <?php 
 
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
-		if(checkIssetFields($_POST , ['name' , 'description','price','country' , 'rating' , 'category' , 'tags','cash'])){
+		if(checkIssetFields($_POST , ['name' , 'description','price','country' , 'rating' , 'category' , 'tags'])){
 			$method = cleanListOfFieldes($_POST);
             if(!isset($_FILES['img'])){
                 echo doAlert(0 , '' , 'Please Try Again!');
@@ -60,7 +61,7 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 
                 $product_image = $produtImageName;
 
-				$connection = $conn->prepare("INSERT INTO shop.products(Name,Description,Price,Country_Made,Rating,Category,Added_by,tags,Image,cash) VALUE(?,?,?,?,?,?,?,?,?,?)");
+				$connection = $conn->prepare("INSERT INTO shop.products(Name,Description,Price,Country_Made,Rating,Category,Added_by,tags,Image) VALUE(?,?,?,?,?,?,?,?,?)");
 				$connection->execute([
 					$method['name'],
 					$method['description'],
@@ -70,22 +71,18 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 					$method['category'],
 					$_SESSION['user_id'],
 					$method['tags'],
-                    $product_image,
-                    $method['cash']
+                    $product_image
 				]);
 				$res = $connection->rowCount();
                 echo doAlert($res , 'Product Added' , 'Please Try Again!');
 
                 if($res){
-                    // delete the 'Cash' picture;
-                    //get Cash id For that Product;
-                    $listOfCash = explode(',',substr($method['cash'],0,-1));
-                    outPutArray($listOfCash);
-                    foreach ($listOfCash as $oneCash) {
-                        $directory = dirname(__DIR__).'/shop/addProductCash/' . $oneCash;
-                        unlink($directory);
+
+                    if(!empty($_SESSION['cash'])){
+                        unlink(dirname(__DIR__).'/shop/addProductCash/' . $_SESSION['cash']);
+                        $_SESSION['cash'] = '';
                     }
-                    //redirect to profile Page Agian
+                    
                     header('location:profile.php');
 
                 }
@@ -95,7 +92,12 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 			}
 
 		}
-	}
+	}else{
+        if(!empty($_SESSION['cash'])){
+            unlink(dirname(__DIR__).'/shop/addProductCash/' . $_SESSION['cash']);
+            $_SESSION['cash'] = '';
+        }
+    }
 
 
 ?>
@@ -200,7 +202,6 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
                                 </div>
                             </div>
 
-                                    <input type="hidden" name="cash" value="" id="cash" />
 
 
                             <!-- Start Submit Field -->
@@ -258,15 +259,11 @@ checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
             if(response){
                 var imageName = response.replace(/^.*[\\\/]/, '');
                 document.getElementById('realImage').src = response;
-                cash += imageName.toLowerCase()+',';
-                document.getElementById('cash').value = cash;
             }
         }
+
     });
-
     }
-    
-
 );
 
 </script>

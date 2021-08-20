@@ -79,7 +79,7 @@
 
                     <?php
         
-            $connect = $conn->prepare('SELECT * FROM shop.users WHERE user_id != 1');
+            $connect = $conn->prepare('SELECT * FROM shop.users WHERE group_id != 1');
             $connect->execute();
 
             $data = $connect->fetchAll();

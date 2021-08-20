@@ -66,3 +66,6 @@
             return false;
         }
     }
+    function sayHi(){
+        return 'Hello World';
+    }

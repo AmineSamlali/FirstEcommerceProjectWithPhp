@@ -20,7 +20,6 @@
           <li><a href="<?php echo $categorys_url; ?>"><?php echo translate('CATEGORYS')?></a> </li>
           <li><a href="<?php echo $products_url; ?>"><?php echo translate('ITEMS')?></a> </li>
           <li><a href="<?php echo $memebers_url; ?>"><?php echo translate('MEMBERS')?></a> </li>
-          <li><a href="#"><?php echo translate('STATISTICS')?></a> </li>
           <li><a href="<?php echo $log_url; ?>"><?php echo translate('LOGS')?></a> </li>
         </li>
 
@@ -30,9 +29,9 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php print_r($_SESSION['username']) ?><span class="caret"></span></a>
           <ul class="dropdown-menu">
-          <li><a href="">visite Web Site</a></li>
+          <li><a href="../products.php">visite Web Site</a></li>
             <li><a href="<?php echo $profile_url; ?>">Edit Profile</a></li>
-            <li><a href="#">Settings</a></li>
+            <li><a href="<?php echo $setting_url; ?>">Settings</a></li>
             <li><a href="<?php echo $logout_url; ?>">Logout</a></li>
 
           </ul>

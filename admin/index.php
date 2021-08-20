@@ -28,7 +28,7 @@
         if (strlen($_POST['username']) > 0 && strlen($_POST['password']) > 0){
             
             $hashedPwd = sha1($password);
-            $sql = $conn->prepare('SELECT user_id ,username, password , full_name , email FROM shop.users WHERE username = ? AND password = ? AND group_id = 1');
+            $sql = $conn->prepare('SELECT user_id ,username, password , full_name , email ,registration_date,Image,group_id FROM shop.users WHERE username = ? AND password = ? AND group_id = 1');
             $sql->execute([$username , $hashedPwd]);
             $data = $sql->fetch();
             $auth = $sql->rowCount();
@@ -40,6 +40,10 @@
                 $_SESSION['password'] = $password;
                 $_SESSION['full_name'] = $data['full_name'];
                 $_SESSION['email'] = $data['email'];
+                $_SESSION['reg_date'] = $data['registration_date'];
+                $_SESSION['picture'] = $data['Image'];
+                $_SESSION['group_id'] = $data['group_id'];
+
                 header('location:dashboard.php');
                 exit();
                 

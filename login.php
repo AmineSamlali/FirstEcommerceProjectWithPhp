@@ -13,18 +13,19 @@ $pageName  = 'Login/Register';
 
 include 'init.php';
 
+checkMaintenanceMode();
+
 ?>
 
 <?php 
 	$errorMsg = '';
 
 	if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
         if (isset($_POST['login'])) {
             $username = clean($_POST['username']);
             $password = clean($_POST['password']);
             if (strlen($_POST['username']) > 0 && strlen($_POST['password']) > 0) {
-                    $connection = $conn->prepare("SELECT user_id ,username, password , full_name ,registration_date ,  email FROM shop.users WHERE username = ? AND password = ? AND trust_status = 1");
+                    $connection = $conn->prepare("SELECT user_id ,username, password , full_name ,registration_date ,  email,Image,group_id FROM shop.users WHERE username = ? AND password = ? AND trust_status = 1");
                     $connection->execute([$username , sha1($password)]);
                     if($connection->rowCount()){
                         $data = $connection->fetch();
@@ -32,6 +33,7 @@ include 'init.php';
                             if (isset($_POST['user_ip'])) {
                                 updateIp($_POST['username'], $_POST['user_ip']);
                             };
+                            
                             $_SESSION['user_id'] = $data['user_id'];
                             $_SESSION['username'] = $username;
                             $_SESSION['password'] = $password;
@@ -39,15 +41,16 @@ include 'init.php';
                             $_SESSION['email'] = $data['email'];
                             $_SESSION['reg_date'] = $data['registration_date'];
                             $_SERVER['pwd'] = $data['password'];
+                            $_SESSION['picture'] = $data['Image'];
+                            $_SESSION['group_id'] = $data['group_id'];
+
                             header('location:profile.php');
                         }
                     }else{
                         $errorMsg = (checkUserStatus($username,sha1($password)) == 1) ? 'Username Or Password Invalid!' : 'Your Account Has Been Banned !';
                     }
             }else{
-            
-                $errorMsg = 'Please try again! e';
-
+                $errorMsg = 'Please try again!';
             }
         }elseif(isset($_POST['signup'])){
             $username 	= clean($_POST['username']);

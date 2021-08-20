@@ -6,6 +6,8 @@ include 'init.php';
 if(isset($_SESSION['username'])){
 	checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 }
+checkMaintenanceMode();
+
 ?>
 <?php
 // Check GET method
@@ -184,7 +186,9 @@ if (isset($_SESSION['username'])) {
                             shop.comments.comment_text,
                             shop.comments.comment_id,
                             shop.comments.added_by,
-                            shop.users.username as username
+                            shop.users.username as username,
+                            shop.users.image as picture
+
                         FROM
                             shop.comments
                         INNER JOIN shop.users ON
@@ -195,10 +199,11 @@ if (isset($_SESSION['username'])) {
         echo '<div id="productComments">';
 foreach ($data as $comment) {
     $deleteBtn = (isset($_SESSION['user_id']) and $_SESSION['user_id'] === $comment['added_by']) ? '<a class= "btn btn-danger" style="float:right;" commentId= ' . $comment['comment_id'] . ' onclick="deleteComment(this)" ><i class="fas fa-trash-alt"></i>Delete</a>' : '';
+    $image = (isset($comment['picture']) and !empty($comment['picture'])) ? 'data/users/' . $comment['picture'] : 'img.png';
     echo '<div  class="comment-box">
                                 <div class="row">
                                     <div class="col-sm-2 text-center">
-                                        <img class="img-responsive img-thumbnail img-circle center-block" src="img.png" alt="">
+                                        <img class="img-responsive img-thumbnail img-circle center-block" src="'.$image.'" alt="">
                                         ' . $comment['username'] . '</div>
                                     <div class="col-sm-10">
                                         <p class="lead">'

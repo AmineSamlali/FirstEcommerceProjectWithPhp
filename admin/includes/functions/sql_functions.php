@@ -87,16 +87,39 @@
             $connection = $conn->prepare("SELECT trust_status FROM shop.users WHERE username = ? AND password = ?");
             $connection->execute([$username,$password]);
             $data = $connection->fetch();
-            if(!$data['trust_status']){
-                if($redirectMode){
-                    header('location:logout.php');
-                    exit();
-                }else{
-                    return $data;
-                }
+            if($connection->rowCount()){
+                if(!$data['trust_status']){
+                    if($redirectMode){
+                        header('location:logout.php');
+                        exit();
+                    }else{
+                        return $data;
+                    }
+                }    
             }
             return 1;
             
         }
 
     }
+
+    function checkMaintenanceMode(){
+        global $conn;
+        $connection = $conn->prepare("SELECT maintenance_mode FROM shop.settings WHERE id = 1");
+        $connection->execute();
+        $data = $connection->fetchColumn();
+        if (!isset($_SESSION['group_id'])) {
+            if ($data) {
+                header('location:maintenance.php');
+                exit();
+            }    
+        }else{
+            if($_SESSION['group_id'] == 0){
+                if ($data) {
+                    header('location:maintenance.php');
+                    exit();
+                }        
+            }
+        }
+        
+    };

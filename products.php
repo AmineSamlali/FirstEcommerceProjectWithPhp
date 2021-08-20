@@ -7,6 +7,8 @@ include 'init.php';
 if(isset($_SESSION['username'])){
 	checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
 }
+checkMaintenanceMode();
+
 ?>
 
 <?php

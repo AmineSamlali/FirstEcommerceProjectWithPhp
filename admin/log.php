@@ -19,7 +19,7 @@
     <div class="container">
         <h1 class="text-center">Log</h1>
 
-<div class="main">
+<div class="main" id="thisdiv">
         <ul class="list-unstyled latest-users">
             <?php
                 $connection = $conn->prepare('SELECT * FROM shop.log ORDER BY log_datetime DESC');
@@ -32,7 +32,8 @@
             ?>
         </ul>
     </div>
-    <button class="btn btn-primary" style="float:right;margin-bottom: 3e20;margin-top: 5px;">Export</button>
+    <button class="btn btn-primary"  style="float:right;margin-bottom: 3e20;margin-top: 5px;">Export</button>
+    <button class="btn btn-danger" onclick="deleteAll()" style="float:left;margin-bottom: 3e20;margin-top: 5px;">Delete</button>
 
     </div>
 
@@ -40,3 +41,12 @@
 
 <?php include $template_directory .'footer.php' ?>
 
+<script>
+    function deleteAll(){
+        $.post('ajax_check.php' , {
+            formType:'delete-log'
+        },(res)=>{
+            $('#thisdiv').load(document.URL +  ' #thisdiv');
+        })
+    }
+</script>

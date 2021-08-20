@@ -22,8 +22,15 @@
     <div class="upper-bar">
         <div class="container">
 
-            <img class="my-image img-thumbnail img-circle" src="img.png" alt="img.png" />
-            <div class="btn-group my-info">
+            <?php 
+                if(!empty($_SESSION['picture'])){
+                    echo '<img class="my-image img-thumbnail img-circle" src="'. 'data/users/'.$_SESSION['picture'] .'" alt="img.png" />';
+                }else{
+                    echo '<img class="my-image img-thumbnail img-circle" src="img.png" alt="img.png" />';
+
+                }
+            ?>
+        <div class="btn-group my-info">
                 <span class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     <?php echo $_SESSION['username'] ?>
                     <span class="caret">
