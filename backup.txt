@@ -30,7 +30,7 @@
                     <li><a href="logout.php">Logout</a></li>
                 </ul>
             </div>
-            <a href="login.php">
+            <a href="index.php">
                 <span class="pull-right">Login/Signup</span>
             </a>
         </div>
@@ -81,7 +81,7 @@
 
 
                     <li>
-                    <a href="login.php">
+                    <a href="index.php">
                         <span title="Login Or Register To You'r Account Now." class="badge badge-secondary">login/register</span>
                         </a>
                     </li>

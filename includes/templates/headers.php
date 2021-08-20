@@ -79,7 +79,7 @@
 
                     <?php if(!isset($_SESSION['username'])){ ?>
                             <li>
-                                <a href="login.php">
+                                <a href="index.php">
                                                     <span title="Login Or Register To You'r Account Now." class="badge badge-secondary">login/register</span>
                                                     </a>
                                                 </li>

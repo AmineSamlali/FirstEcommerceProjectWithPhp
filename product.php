@@ -129,7 +129,7 @@ echo $ratingList[$data['Rating']];
 if (!isset($_SESSION['username'])) {
     ?>
 	<hr class="custom-hr">
-	<a href="login.php">Login</a> or <a href="login.php">Register</a> To Add Comment	
+	<a href="index.php">Login</a> or <a href="index.php">Register</a> To Add Comment	
 
     <hr class="custom-hr">
 

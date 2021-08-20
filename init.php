@@ -16,5 +16,5 @@
     include $tpl.'headers.php';
 
 	// Routes 
-	$login = 'login.php';
+	$login = 'index.php';
 
