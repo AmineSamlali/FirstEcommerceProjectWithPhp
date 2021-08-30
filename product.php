@@ -118,16 +118,15 @@ $data = $connect->fetch();
 
                                             <li>
                                                 <i class="fa fa-star fa-fw"></i>
-                                                <span>Rating</span>: <?php $ratingList = [
-    1 => 'New',
-    2 => 'Like New',
-    3 => 'Used',
-    4 => 'Very Old',
-];
-echo $ratingList[$data['Rating']];
-?>
-                            </li>
-
+                                            <span>Rating</span>: <?php $ratingList = [
+                1 => 'New',
+                2 => 'Like New',
+                3 => 'Used',
+                4 => 'Very Old',
+            ];
+            echo $ratingList[$data['Rating']];
+            ?>
+                                        </li>
 
              
                 <!-- // contact seller onclick=>{
@@ -135,13 +134,15 @@ echo $ratingList[$data['Rating']];
 
                 } -->
                 <?php 
-                    
+                    if(isset($_SESSION['user_id'])){
                         if($data['Added_by'] != $_SESSION['user_id']){
                             echo '<li>';
                             echo '<i class="fa fa-reply-all"></i>';
                             echo '<span>Contact Option\'s</a></span> : <a class="btn btn-success" href="message.php?prd='.$productId.'" >Contact Seller</a></a>';
                             echo '</li>';
                         }
+
+                    }
                 ?>
                 
 
