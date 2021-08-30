@@ -1,5 +1,7 @@
 <?php
 session_start();
+session_regenerate_id();
+
 include 'check_auth.php';
 
 $pageName = 'Dashboard';
@@ -60,7 +62,7 @@ include $functions_directory . 'sql_functions.php';
                     <div class="info">
                         Total Comments
                         <span>
-                            <a href="products.php"><?php echo sqlCount('comment_id', 'shop.comments') ?></a>
+                            <a href="comments.php"><?php echo sqlCount('comment_id', 'shop.comments') ?></a>
                         </span>
                     </div>
                 </div>

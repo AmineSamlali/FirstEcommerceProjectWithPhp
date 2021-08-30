@@ -1,5 +1,7 @@
 <?php 
     session_start();
+    session_regenerate_id();
+
     include 'check_auth.php';
 
     $pageName = 'All Members';
@@ -53,7 +55,9 @@
             }
         
 
+
     ?>
+
 <div id="body">
 
     <h1 class="text-center">All Memebers</h1>
@@ -64,6 +68,7 @@
                 <a href="#" class="btn btn-primary" style="float:right;margin-bottom: 3e20;margin-bottom: 5px;"
                     data-toggle="modal" data-target="#myModal">Add New
                     Member</a>
+                    <input id="productSearch" placeholder="Filter Members By Name" type="text">
 
                 <table class="main-table text-center table table-bordered">
                     <tr>
@@ -79,7 +84,7 @@
 
                     <?php
         
-            $connect = $conn->prepare('SELECT * FROM shop.users WHERE group_id != 1');
+            $connect = $conn->prepare('SELECT * FROM shop.users WHERE group_id != 1 ORDER BY `user_id` DESC');
             $connect->execute();
 
             $data = $connect->fetchAll();
@@ -268,6 +273,38 @@ checkFileds('#exampleInputUserName1' , 8,'ajax_check.php' , 'btnAdd' , 'username
 </script>
 
 <script>
+
+$(document).ready(function(){
+
+let queryString = location.search;
+if(queryString){
+    const urlParams = new URLSearchParams(queryString);
+
+if(urlParams.get('user').length > 0){
+
+    let searchValue = urlParams.get('user');
+    let table = document.querySelector("tbody");
+    let childrens = Array.from(table.children);
+
+    childrens.forEach(row => {
+        let rowList= Array.from(row.children);
+        if(rowList.length > 0){
+        if(!rowList[2].innerHTML.toLowerCase().startsWith(searchValue.toLowerCase()) && rowList[0].innerHTML != "#ID"){
+            row.style = 'visibility:collapse';
+        }else{
+            row.style = 'visibility:visible';
+            }
+        }
+    })
+
+
+}
+}
+
+
+})
+
+
 function deleteUser(event) {
     let confirmed = confirm('Are You sure ?');
     if (confirmed) {
@@ -401,5 +438,31 @@ function unBanUser(event){
     })
 
 };
+
+
+
+$(document).ready(function(){
+    $("#productSearch").on('input', (e) => {
+    let searchValue = e.target.value;
+    let table = document.querySelector("tbody");
+    let childrens = Array.from(table.children);
+
+    childrens.forEach(row => {
+        let rowList= Array.from(row.children);
+        if(rowList.length > 0){
+        if(!rowList[2].innerHTML.toLowerCase().startsWith(searchValue.toLowerCase()) && rowList[0].innerHTML != "#ID"){
+            row.style = 'visibility:collapse';
+        }else{
+            row.style = 'visibility:visible';
+            }
+        }
+    })
+
+})
+
+})
+
+
+
 
 </script>

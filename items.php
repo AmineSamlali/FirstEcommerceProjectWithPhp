@@ -256,6 +256,7 @@ checkMaintenanceMode();
         contentType: false,
         data: files,
         success: function (response) {
+            console.log(response)
             if(response){
                 var imageName = response.replace(/^.*[\\\/]/, '');
                 document.getElementById('realImage').src = response;

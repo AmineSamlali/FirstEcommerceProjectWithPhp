@@ -10,3 +10,4 @@
         $products_url = 'products.php';
         $log_url = 'log.php';
         $setting_url = 'setting.php';
+        $comments = 'comments.php';

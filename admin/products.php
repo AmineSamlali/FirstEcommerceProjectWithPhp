@@ -1,5 +1,7 @@
 <?php 
     session_start();
+    session_regenerate_id();
+
     include 'check_auth.php';
 
     $pageName = 'Products';
@@ -20,6 +22,7 @@
             <a href="#" class="btn btn-primary" onclick="checkIfIs(this)" style="float:right;margin-bottom: 3e20;margin-bottom: 5px;"
                 data-toggle="modal" data-target="#myModal">Add New
                 Product</a>
+                <input id="productSearch" placeholder="Filter Products By Name" type="text">
 
             <table class="main-table text-center table table-bordered">
                 <tbody>
@@ -38,7 +41,7 @@
                     <tr>
                         <?php
                         // SELECT products.* , categorys.Name AS categortName , users.username AS AddedBy FROM products INNER JOIN categorys ON categorys.id = products.Category INNER JOIN users on users.user_id = products.Added_by
-                            $connection = $conn->prepare("SELECT shop.products.* , shop.categorys.Name AS categortName , shop.users.username AS AddedBy FROM shop.products INNER JOIN shop.categorys ON shop.categorys.id = shop.products.Category INNER JOIN shop.users on shop.users.user_id = shop.products.Added_by");
+                            $connection = $conn->prepare("SELECT shop.products.* , shop.categorys.Name AS categortName , shop.users.username AS AddedBy FROM shop.products INNER JOIN shop.categorys ON shop.categorys.id = shop.products.Category INNER JOIN shop.users on shop.users.user_id = shop.products.Added_by ORDER BY `product_id` DESC");
                             $connection->execute();
                             $data = $connection->fetchAll();
                             foreach($data as $product){
@@ -353,6 +356,37 @@
 
 
 <script>
+
+
+$(document).ready(function(){
+let queryString = location.search;
+if(queryString){
+    const urlParams = new URLSearchParams(queryString);
+
+if(urlParams.get('product').length > 0){
+    let searchValue = urlParams.get('product');
+    let table = document.querySelector("tbody");
+    let childrens = Array.from(table.children);
+    childrens.forEach(row => {
+        let rowList= Array.from(row.children);
+        if(rowList.length > 0){
+            if(!(rowList[0].innerText == searchValue) && rowList[0].innerText != "#ID"){
+                row.style = 'visibility:collapse';
+            }else{
+                row.style = 'visibility:visible';
+            }
+        }
+    })
+}
+}
+})
+
+
+function isValidURL(string) {
+  var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+  return (res !== null)
+};
+
 var product = '';
 
 function editeProduct(e) {
@@ -374,7 +408,12 @@ function editeProduct(e) {
         $('#productMade').val(data[0]['Country_Made']);
         $('#productStatus').val(data[0]['Status']);
         $('#productRating').val(data[0]['Rating']);
-        $('#curretImage').attr('src' , window.location.origin +"/server/shop/data/uploads/" + data[0]['Image']);
+        if(isValidURL(data[0]['Image'])){
+            $('#curretImage').attr('src' , data[0]['Image']);
+        }else{
+            $('#curretImage').attr('src' , window.location.origin +"/server/shop/data/uploads/" + data[0]['Image']);
+
+        }
     })
 }
 
@@ -479,16 +518,40 @@ function checkIfIs(e){
 };
 
 
+
 function activeProduct(e){
     let productId = e.getAttribute('productActiveId');
-    $.post('ajax_check.php', {
+    $.post('ajax_check.php',{
         formType: 'product-activate',
         product_id: productId
-    }, (data) => {
+    },(data) => {
         if (data == 1) {
             location.reload();
         }
+
     })
 }
 
+$(document).ready(function(){
+    $("#productSearch").on('input', (e) => {
+    let searchValue = e.target.value;
+    let table = document.querySelector("tbody");
+    let childrens = Array.from(table.children);
+    childrens.forEach(row => {
+        let rowList= Array.from(row.children);
+        if(rowList.length > 0){
+        if(!rowList[1].innerHTML.toLowerCase().startsWith(searchValue.toLowerCase()) && rowList[0].innerHTML != "#ID"){
+            row.style = 'visibility:collapse';
+        }else{
+            row.style = 'visibility:visible';
+            }
+        }
+    })
+
+})
+
+})
+
+
 </script>
+

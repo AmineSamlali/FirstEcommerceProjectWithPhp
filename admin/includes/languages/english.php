@@ -12,6 +12,7 @@
             'MEMBERS' => 'Members',
             'STATISTICS' => 'Statistics',
             'LOGS' => 'Logs',
+            "COMMENT" => "comments"
 
         );
         return $langsArray[$phrese];

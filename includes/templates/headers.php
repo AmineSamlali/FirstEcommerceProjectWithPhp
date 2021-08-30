@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="<?php echo $css ?>jquery-ui.css" />
     <link rel="stylesheet" href="<?php echo $css ?>jquery.selectBoxIt.css" />
     <link rel="stylesheet" href="<?php echo $css ?>front.css" />
+    
 </head>
 
 <body>
@@ -18,15 +19,21 @@
 
 
 
-
     <div class="upper-bar">
         <div class="container">
 
             <?php 
                 if(!empty($_SESSION['picture'])){
-                    echo '<img class="my-image img-thumbnail img-circle" src="'. 'data/users/'.$_SESSION['picture'] .'" alt="img.png" />';
+                    $picStatus = file_exists('data/users/'.$_SESSION['picture']);
+        
+                    if($picStatus){
+                        echo '<img class="my-image img-thumbnail img-circle" src="'. 'data/users/'.$_SESSION['picture'] .'" alt="img.png" />';
+
+                    }else{
+                        echo '<img class="my-image img-thumbnail img-circle" src="img.png" />';
+                    }
                 }else{
-                    echo '<img class="my-image img-thumbnail img-circle" src="img.png" alt="img.png" />';
+                    echo '<img class="my-image img-thumbnail img-circle" src="img.png" />';
 
                 }
             ?>
@@ -39,6 +46,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="profile.php">My Profile</a></li>
                     <li><a href="items.php">Add New Item</a></li>
+                    <li><a href="mymessages.php">Message</a></a></li>
                     <li><a href="logout.php">Logout</a></li>
                 </ul>
             </div>
@@ -64,32 +72,52 @@
                     
                     <?php
 
-                $categorys = fetchAllFromTeble('id,Name,Description', 'shop.categorys', 'WHERE Visibility = 1');
+                    $categorys = fetchAllFromTeble('id,Name,Description', 'shop.categorys', 'WHERE Visibility = 1 LIMIT  5');
 
-                foreach ($categorys as $category) {
-                    echo '<li>';
-                    echo "<a href=\"products.php?categorys=" . $category['id'] . '&categoryName=' . $category['Name'] . '"/>';
-                    echo '<span title="' . $category['Description'] . '">' . $category['Name'] . '</span>';
-                    echo '</a>';
-                    echo '</li>';
-                }
+                    foreach ($categorys as $category) {
+                        echo '<li>';
+                        echo "<a href=\"products.php?categorys=" . $category['id'] . '&categoryName=' . $category['Name'] . '"/>';
+                        echo '<span title="' . $category['Description'] . '">' . $category['Name'] . '</span>';
+                        echo '</a>';
+                        echo '</li>';
+                    }
 
                 ?>
 
+                        <?php //if (sqlCount('id','shop.categorys') > 5){
+                                    // $categorys = fetchAllFromTeble('id,Name,Description', 'shop.categorys', 'WHERE Visibility = 1');
+                                    // echo '<li class="dropdown">';
+                                    // echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More<span class="caret"></span></a>';
+                                    // echo '<ul class="dropdown-menu">';
+                                    // foreach ($categorys as $index=>$category) {
+                                    //     if($index > 5){
+                                    //         echo '<li>';
+                                    //         // echo "<a href=\"products.php?categorys=" . $category['id'] . '&categoryName=' . $category['Name'] . '"/>';
+                                    //         // echo '<span title="' . $category['Description'] . '">' . $category['Name'] . '</span>';
+                                    //         echo '</a>';
+                                    //         echo '</li>';
+                                    //     }
+                                    // }
+                                    
+                                    // echo '</ul>';
 
-                    <?php if(!isset($_SESSION['username'])){ ?>
-                            <li>
+                                    // echo '</li>';
+                        //} ?>
+
+
+                    <?php if(!isset($_SESSION['username'])){ 
+                            echo '<li>
                                 <a href="index.php">
-                                                    <span title="Login Or Register To You'r Account Now." class="badge badge-secondary">login/register</span>
+                                                    <span title="Login Or Register To You\'r Account Now." class="badge badge-secondary">login/register</span>
                                                     </a>
-                                                </li>
+                                </li>';
 
-                                            </ul>
+                    }?>
 
-                                    </ul>
-                        <?php }?>
 
-            </div>
+                    </ul>
+
+                    </div>
         </div>
 
 

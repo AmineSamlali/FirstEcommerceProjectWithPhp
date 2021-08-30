@@ -1,5 +1,7 @@
 <?php 
     session_start();
+    session_regenerate_id();
+
     include 'check_auth.php';
 
     $pageName = 'Categorys';
@@ -19,8 +21,10 @@
             <a href="#" class="btn btn-primary" style="float:right;margin-bottom: 3e20;margin-bottom: 5px;"
                 data-toggle="modal" data-target="#myModal">Add New
                 Category</a>
+            <input id="productSearch" placeholder="Filter Categorys By Name" type="text">
 
-            <table class="main-table text-center table table-bordered">
+
+            <table id="categorysTable" class="main-table text-center table table-bordered">
                 <tr>
                     <td>#ID</td>
                     <td>Name</td>
@@ -30,12 +34,11 @@
                     <td>Ads</td>
                     <td>Options</td>
                 </tr>
-
                 <?php 
                 
-                $data = $conn->prepare("SELECT * FROM shop.categorys");
+                $data = $conn->prepare("SELECT * FROM shop.categorys ORDER BY `id` DESC");
                 $data->execute();
-
+            
                 foreach($data as $col){
                     $vis = $col['Visibility'] == 1 ? 'Yes' : 'No';
                     $comments = $col['Comments'] == 1 ? 'Yes' : 'No';
@@ -50,13 +53,11 @@
                         echo '<td>
                         <a  data-toggle="modal" data-target="#CateModal" categoryId =' . $col['id'] . ' onclick = "editeCategory(this)"  class="btn btn-success"><i class="fas fa-user-edit"></i> Edite</a>
                         <a categoryId = '.$col['id'].' onclick = "deleteCategory(this)" class="btn btn-warning"><i class="fas fa-user-times"></i> Delete</a>';
-
-                    echo '</tr>';
-                    
+                    echo '</tr>';        
                 };
 
-
                 ?>
+
                 <!-- [START] startEite Form  -->
                 <div class="modal fade" id="CateModal" role="dialog">
                     <div class="modal-dialog">
@@ -90,15 +91,15 @@
                                     <!-- Visibilty -->
                                     <label>Visibilty</label>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="1" type="radio" id="flexRadioVisibilty"
+                                        <input class="form-check-input" value="1" type="radio" 
                                             name="flexRadioVisibiltyEdite">
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault3">
                                             Yes
                                         </label>
                                     </div>
 
                                     <div class="form-check">
-                                        <input class="form-check-input" value="0" type="radio" id="flexRadioVisibilty"
+                                        <input class="form-check-input" value="0" type="radio" 
                                             name="flexRadioVisibiltyEdite">
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             No
@@ -110,15 +111,15 @@
 
                                     <label>Allow Commenets</label>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="1" type="radio" id="flexRadioCommenets"
+                                        <input class="form-check-input" value="1" type="radio" 
                                             name="flexRadioCommenetsEdite" >
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault3">
                                             Yes
                                         </label>
                                     </div>
 
                                     <div class="form-check">
-                                        <input class="form-check-input" value="0" type="radio" id="flexRadioCommenets"
+                                        <input class="form-check-input" value="0" type="radio" 
                                             name="flexRadioCommenetsEdite">
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             No
@@ -128,21 +129,21 @@
                                     <!-- Ads  -->
                                     <label>Allow Ads</label>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="1" type="radio" id="flexRadioAds"
+                                        <input class="form-check-input" value="1" type="radio" 
                                             name="flexRadioAdsEdite" >
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault3">
                                             Yes
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="0" type="radio" id="flexRadioAds"
+                                        <input class="form-check-input" value="0" type="radio" 
                                             name="flexRadioAdsEdite">
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             No
                                         </label>
                                     </div>
 
-                                    <center><input type="submit" id="btnAdd" class="btn btn-primary"
+                                    <center><input type="submit" id="btnAddV1" class="btn btn-primary"
                                             value="Edite Category"></center>
 
 
@@ -191,15 +192,15 @@
                                     <!-- Visibilty -->
                                     <label>Visibilty</label>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="1" type="radio" id="flexRadioVisibilty"
+                                        <input class="form-check-input" value="1" type="radio" 
                                             name="flexRadioVisibilty" checked >
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault3">
                                             Yes
                                         </label>
                                     </div>
 
                                     <div class="form-check">
-                                        <input class="form-check-input" value="0" type="radio" id="flexRadioVisibilty"
+                                        <input class="form-check-input" value="0" type="radio" 
                                             name="flexRadioVisibilty">
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             No
@@ -210,15 +211,15 @@
                                     <!-- Commenets  -->
                                     <label>Allow Commenets</label>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="1" type="radio" id="flexRadioCommenets"
+                                        <input class="form-check-input" value="1" type="radio" 
                                             name="flexRadioCommenets" checked>
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault3">
                                             Yes
                                         </label>
                                     </div>
 
                                     <div class="form-check">
-                                        <input class="form-check-input" value="0" type="radio" id="flexRadioCommenets"
+                                        <input class="form-check-input" value="0" type="radio" 
                                             name="flexRadioCommenets">
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             No
@@ -228,14 +229,14 @@
                                     <!-- Ads  -->
                                     <label>Allow Ads</label>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="1" type="radio" id="flexRadioAds"
+                                        <input class="form-check-input" value="1" type="radio" 
                                             name="flexRadioAds" checked>
-                                        <label class="form-check-label" for="flexRadioDefault1">
+                                        <label class="form-check-label" for="flexRadioDefault3">
                                             Yes
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="0" type="radio" id="flexRadioAds"
+                                        <input class="form-check-input" value="0" type="radio" 
                                             name="flexRadioAds">
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             No
@@ -281,7 +282,6 @@ function editeCategory(e) {
         formType: 'ShowInfoCategory',
         cateId: cateId
     }, (data) => {
-        console.log(data);
 
         let res = JSON.parse(data);
         $('input[name=\'categoryNameEdite\']').val(res['Name']);
@@ -345,6 +345,28 @@ function deleteCategory(e){
             location.reload()
     })
 }
+
+
+$(document).ready(function(){
+    $("#productSearch").on('input', (e) => {
+    let searchValue = e.target.value;
+    let table = document.querySelector("tbody");
+    let childrens = Array.from(table.children);
+    childrens.forEach(row => {
+        let rowList= Array.from(row.children);
+        if(rowList.length > 0){
+        if(!rowList[1].innerHTML.toLowerCase().startsWith(searchValue.toLowerCase()) && rowList[0].innerHTML != "#ID"){
+            row.style = 'visibility:collapse';
+        }else{
+            row.style = 'visibility:visible';
+            }
+        }
+    })
+
+})
+
+})
+
 
 
 

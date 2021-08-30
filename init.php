@@ -13,7 +13,10 @@
 
 
     // include $func.'functions.php';
-    include $tpl.'headers.php';
+	if(!isset($noNavBar)){
+		include $tpl.'headers.php';
+
+	}
 
 	// Routes 
 	$login = 'index.php';

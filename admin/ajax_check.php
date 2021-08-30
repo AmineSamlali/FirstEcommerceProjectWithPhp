@@ -1,5 +1,7 @@
 <?php
     session_start();
+    session_regenerate_id();
+
     include 'connect.php';
 
     include 'includes/functions/functions.php';
@@ -343,7 +345,9 @@
             }
         }elseif($_POST['formType'] === 'showImageImage'){
 
-            $target_dir = 'C:\xampp\htdocs\server\shop\\addProductCash\\';
+            $target_dir =  dirname(__DIR__) .'\addProductCash\\';
+            
+
 
             $resource = explode('.',preg_replace('/\./','', $_FILES['fileName']['name'],substr_count($_FILES['fileName']['name'],'.') - 1))[1];
 
@@ -374,5 +378,22 @@
             $connection = $conn->prepare("DELETE FROM shop.log");
             $connection->execute();
             
-        }
+        }elseif($_POST['formType'] == 'deleteComment'){
+                if(isset($_POST['commentId'])){
+                    $check = checkField('shop.comments' , '*' , [
+                        'filed_name' => 'comment_id',
+                        'value' => clean($_POST['commentId'])
+                    ]);
+                    if ($check > 0){
+    
+    
+                        $connection = $conn->prepare('DELETE FROM shop.comments WHERE comment_id = ? ');
+                        $connection->execute([$_POST['commentId']]);
+                        $done = $connection->rowCount();
+                        echo $done;
+                        
+                    }
+                }
+            }
     }
+    

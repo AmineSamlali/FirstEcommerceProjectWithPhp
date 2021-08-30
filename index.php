@@ -1,11 +1,11 @@
 <?php 
 	session_start();
+    session_regenerate_id();
+
 
 if (isset($_SESSION['username'])){
-
 	header('location:profile.php');
 	exit();
-
 }
 
 $pageName  = 'Login/Register';
@@ -43,8 +43,8 @@ checkMaintenanceMode();
                             $_SERVER['pwd'] = $data['password'];
                             $_SESSION['picture'] = $data['Image'];
                             $_SESSION['group_id'] = $data['group_id'];
-
                             header('location:profile.php');
+                            
                         }
                     }else{
                         $errorMsg = (checkUserStatus($username,sha1($password)) == 1) ? 'Username Or Password Invalid!' : 'Your Account Has Been Banned !';
@@ -57,7 +57,7 @@ checkMaintenanceMode();
 			$password 	= clean($_POST['password']);
 			$password2 	= clean($_POST['password2']);
 			$email 		= clean($_POST['email']);
-            $fullName = clean($_POST['full_name']);
+            $fullName   = clean($_POST['full_name']);
             if(checkIssetFields($_POST , ['username','password','password2','email','full_name'])){
                 if (strlen($username) >= 8 and strlen($password) >= 8 and strlen($password2) >= 8) {
                     if (checkField('shop.users', 'username', ['filed_name'=>'username','value'=>clean($username)]) === 0) {

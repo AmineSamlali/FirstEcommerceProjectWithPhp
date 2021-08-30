@@ -1,5 +1,6 @@
 <?php
 session_start();
+session_regenerate_id();
 
 $pageName = 'Product';
 include 'init.php';
@@ -68,7 +69,14 @@ $data = $connect->fetch();
 <div class="container">
 	<div class="row">
 		<div class="col-md-3">
-			<img class="img-responsive img-thumbnail center-block" src="data/uploads/<?php echo $data['Image'] ?>" alt="">
+			<img class="img-responsive img-thumbnail center-block" src="<?php 
+                if(filter_var($data['Image'],FILTER_VALIDATE_URL)){
+                    echo $data['Image'];
+                }else{
+                    echo 'data/uploads/' . $data['Image'] ;
+
+                }
+            ?>" alt="">
 		</div>
 		<div class="col-md-9 item-info">
 			<p><?php echo $data['Description']; ?></p>
@@ -119,8 +127,26 @@ $data = $connect->fetch();
 echo $ratingList[$data['Rating']];
 ?>
                             </li>
-				<li>
 
+
+             
+                <!-- // contact seller onclick=>{
+                    // pop up form to Send Message then => redirect to Messages Page;
+
+                } -->
+                <?php 
+                    
+                        if($data['Added_by'] != $_SESSION['user_id']){
+                            echo '<li>';
+                            echo '<i class="fa fa-reply-all"></i>';
+                            echo '<span>Contact Option\'s</a></span> : <a class="btn btn-success" href="message.php?prd='.$productId.'" >Contact Seller</a></a>';
+                            echo '</li>';
+                        }
+                ?>
+                
+
+                
+                
 			</ul>
 		</div>
 	</div>
@@ -248,6 +274,6 @@ function deleteComment(e){
         })
 
 }
-</script>
 
+</script>
 

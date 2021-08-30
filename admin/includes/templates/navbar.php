@@ -20,6 +20,7 @@
           <li><a href="<?php echo $categorys_url; ?>"><?php echo translate('CATEGORYS')?></a> </li>
           <li><a href="<?php echo $products_url; ?>"><?php echo translate('ITEMS')?></a> </li>
           <li><a href="<?php echo $memebers_url; ?>"><?php echo translate('MEMBERS')?></a> </li>
+          <li><a href="<?php echo $comments; ?>"><?php echo translate('COMMENT')?></a> </li>
           <li><a href="<?php echo $log_url; ?>"><?php echo translate('LOGS')?></a> </li>
         </li>
 

@@ -1,5 +1,7 @@
 <?php
 session_start();
+session_regenerate_id();
+
 include 'check_auth.php';
 
 $pageName = 'Settings';

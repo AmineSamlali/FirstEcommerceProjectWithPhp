@@ -1,5 +1,7 @@
 <?php 
 session_start();
+session_regenerate_id();
+
     if(!isset($_SESSION['username'])){
         header('location:index.php');
         exit();
@@ -153,15 +155,22 @@ checkMaintenanceMode();
                 }
                 foreach($products as $product){
                     $status = $product['Status'];
+                    $image = '';
+                    if(filter_var($product['Image'],FILTER_VALIDATE_URL)){
+                        $image = $product['Image'];
+                    }else{
+                        $image = 'data/uploads/' . $product['Image'] ;
+                    }
+    
                     echo '<div class="col-sm-6 col-md-3">';
                     echo '<div class="thumbnail item-box">';
                     if(!$status){
                         echo '<span class="approve-status">Waiting Approval</span>';
                     };
-                    echo'<span class="price-tag">$121</span><img class="img-responsive" style="width: 250px;height: 250px;" src="data/uploads/' . $product['Image'] .'" alt="">';
+                    echo'<span class="price-tag">$121</span><img class="img-responsive" style="width: 250px;height: 250px;" src=" '.$image.'" alt="'.$product['Name'].'">';
                     echo '<div class="caption">';
                     echo '<h3><a href="product.php?itemid='.$product['product_id'].'">'.$product['Name'].'</a></h3>';
-                    echo '<p>'.$product['Description'].'</p>';
+                    echo '<p>' . (strlen($product['Description']) >= 80) ?  substr($product['Description'] , 0,80).' ...' : $product['Description'] . '</p>';
                     echo '<div class="date">'.date("Y-m-d",strtotime($product['Added_Date'])).'</div>';
                     echo '</div></div></div>';
 
@@ -210,13 +219,21 @@ checkMaintenanceMode();
                 </form>
                 <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data">
                     <br>
-                    <img style="height: 100px;width:100px;" class="img-responsive img-thumbnail img-circle center-block" src="<?php 
-                        if(isset($_SESSION['picture']) and !empty($_SESSION['picture'])){
-                            echo 'data/users/' . $_SESSION['picture'];
-                        }else{
-                            echo 'img.png';
-                        }
-                    ?>" alt="">
+                    <img style="height: 100px;width:100px;" class="img-responsive img-thumbnail img-circle center-block" src=" <?php 
+                            if(!empty($_SESSION['picture'])){
+                                $picStatus = file_exists('data/users/'.$_SESSION['picture']);
+                                if($picStatus){
+                                    echo 'data/users/'.$_SESSION['picture'];
+
+                                }else{
+                                    echo 'img.png';
+                                }
+                            }else{
+                                echo 'img.png';
+
+                            }
+                        ?>
+            " alt="">
                     <br>
                     <div class="form-group">
                         
