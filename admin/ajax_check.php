@@ -14,15 +14,15 @@
         if($_POST['formType'] === 'delete-user'){
             if(isset($_POST['userid'])){
                 
-                $check = checkField('shop.users' , '*' , [
+                $check = checkField('users' , '*' , [
                     'filed_name' => 'user_id',
                     'value' => clean($_POST['userid'])
                 ]);
                 if ($check > 0){
 
-                    addLog('Deleting User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'shop.users' , 'value' => $_POST['userid'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
+                    addLog('Deleting User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'users' , 'value' => $_POST['userid'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
 
-                    $connection = $conn->prepare('DELETE FROM shop.users WHERE user_id = ? ');
+                    $connection = $conn->prepare('DELETE FROM users WHERE user_id = ? ');
                     $connection->execute([$_POST['userid']]);
                     $done = $connection->rowCount();
                     echo $done;
@@ -31,14 +31,14 @@
             }
         }elseif($_POST['formType'] === 'getEditeForm'){
             if(isset($_POST['userId'])){
-                $check = checkField('shop.users' , '*' , [
+                $check = checkField('users' , '*' , [
                     'filed_name' => 'user_id',
                     'value' => clean($_POST['userId'])
                 ]);
                 if ($check > 0){
-                    addLog('Show User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'shop.users' , 'value' => $_POST['userId'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
+                    addLog('Show User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'users' , 'value' => $_POST['userId'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
                     $userId = $_POST['userId'];
-                    $connection = $conn->prepare('SELECT username , full_name , email FROM shop.users WHERE user_id = ?');
+                    $connection = $conn->prepare('SELECT username , full_name , email FROM users WHERE user_id = ?');
                     $connection->execute([$userId]);
                     $data = $connection->fetch();
                     echo json_encode($data);
@@ -48,18 +48,18 @@
             }
         }elseif($_POST['formType'] === 'EditeForm'){
             if(checkIssetFields($_POST , ['user_id' , 'username' ,'fullName' ,'email' ,'password'])){
-                $check = checkField('shop.users' , '*' , [
+                $check = checkField('users' , '*' , [
                     'filed_name' => 'user_id',
                     'value' => clean($_POST['user_id'])
                 ]);
                 if ($check > 0){
-                    addLog('Editing User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'shop.users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
+                    addLog('Editing User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
 
                     if (strlen($_POST['password'] > 0)){
-                        $connection = $conn->prepare("UPDATE shop.users SET `username` = ? , `full_name` = ? , `email` = ? , `password` = ? WHERE `user_id` = ? ");
+                        $connection = $conn->prepare("UPDATE users SET `username` = ? , `full_name` = ? , `email` = ? , `password` = ? WHERE `user_id` = ? ");
                         $connection->execute([$_POST['username'] , $_POST['fullName'] , $_POST['email'] ,$_POST['password'], $_POST['user_id']]);
                     }else{
-                        $connection = $conn->prepare("UPDATE shop.users SET username = ? , `full_name` = ? , `email` = ? WHERE `user_id` = ? ");
+                        $connection = $conn->prepare("UPDATE users SET username = ? , `full_name` = ? , `email` = ? WHERE `user_id` = ? ");
                         $connection->execute([$_POST['username'] , $_POST['fullName'] , $_POST['email'], $_POST['user_id']]);
                     }
                     if ($connection->rowCount() > 0){
@@ -71,14 +71,14 @@
         }elseif ($_POST['formType'] === 'user-activate'){
 
             $userId = $_POST['user_id'];
-            $check = checkField('shop.users' , '*' , [
+            $check = checkField('users' , '*' , [
                 'filed_name' => 'user_id',
                 'value' => clean($userId)
             ]);
             if ($check > 0){
-                addLog('Activating User: ' , ['fieldName'=>'user_id' ,'table' => 'shop.users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
+                addLog('Activating User: ' , ['fieldName'=>'user_id' ,'table' => 'users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
 
-                $connection = $conn -> prepare("UPDATE shop.users SET reg_status = '1' WHERE user_id = ?");
+                $connection = $conn -> prepare("UPDATE users SET reg_status = '1' WHERE user_id = ?");
                 $connection -> execute([$userId]);
 
                 echo 1;
@@ -86,20 +86,20 @@
 
         }elseif($_POST['formType'] === 'showUserInfo'){
             $userId = $_POST['user_id'];
-            $check = checkField('shop.users' , 'username' , [
+            $check = checkField('users' , 'username' , [
                 'filed_name' => 'user_id',
                 'value' => clean($userId)
             ]);
             if ($check > 0){
-                $data = fetchMyColumn('username,full_name,email', 'shop.users' , "user_id = " . $_POST['user_id']);
+                $data = fetchMyColumn('username,full_name,email', 'users' , "user_id = " . $_POST['user_id']);
                 
-                addLog('showing User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'shop.users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
+                addLog('showing User Information\'s: ' , ['fieldName'=>'user_id' ,'table' => 'users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
 
                 echo json_encode($data);
             }
         }elseif($_POST['formType'] === 'addNewCategory'){
             if (checkIssetFields($_POST, ['categoryName' , 'categoryDesc' ,'flexRadioVisibility' ,'flexRadioComments' ,'flexRadioAds'])) {
-                $connection = $conn->prepare("INSERT INTO shop.categorys(Name,Description,Visibility,Comments,Ads) VALUES(?,?,?,?,?) ");
+                $connection = $conn->prepare("INSERT INTO categorys(Name,Description,Visibility,Comments,Ads) VALUES(?,?,?,?,?) ");
                 $connection->execute([$_POST['categoryName'] , $_POST['categoryDesc'] , $_POST['flexRadioVisibility'] , $_POST['flexRadioComments'] , $_POST['flexRadioAds'] ]);
                 $done = $connection->rowCount();
                 echo $done;
@@ -114,14 +114,14 @@
             }
         }elseif($_POST['formType'] === 'ShowInfoCategory'){
             if(isset($_POST['cateId'])){
-                $check = checkField('shop.categorys' , '*' , [
+                $check = checkField('categorys' , '*' , [
                     'filed_name' => 'id',
                     'value' => clean($_POST['cateId'])
                 ]);
                 if ($check > 0){
-                    addLog('showing Category Information: ' , ['fieldName'=>'id' ,'table' => 'shop.categorys' , 'value' => $_POST['cateId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
+                    addLog('showing Category Information: ' , ['fieldName'=>'id' ,'table' => 'categorys' , 'value' => $_POST['cateId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
                     $cateId = $_POST['cateId'];
-                    $connection = $conn->prepare('SELECT Name , Description , Visibility,Comments ,Ads FROM shop.categorys WHERE id = ?');
+                    $connection = $conn->prepare('SELECT Name , Description , Visibility,Comments ,Ads FROM categorys WHERE id = ?');
                     $connection->execute([$cateId]);
                     $data = $connection->fetch();
                     echo json_encode($data);
@@ -131,10 +131,10 @@
             }
         }elseif($_POST['formType'] === 'EditeCategory'){
             if(checkIssetFields($_POST, ['cateId','categoryName' , 'categoryDesc' ,'flexRadioVisibility' ,'flexRadioComments' ,'flexRadioAds'])){
-                $check = checkField('shop.categorys' , '*' , ['filed_name' => 'id','value' =>clean( $_POST['cateId'])]);
+                $check = checkField('categorys' , '*' , ['filed_name' => 'id','value' =>clean( $_POST['cateId'])]);
                 if($check > 0){ 
                     addLog('editing Category: "' .$_POST['categoryName'].'"' ,$_SESSION['username'] );
-                    $connection = $conn->prepare("UPDATE shop.categorys SET `Name` = ?, `Description` = ? , `Visibility` =?, `Comments` = ? ,`Ads`=?  WHERE `id` = ? ");
+                    $connection = $conn->prepare("UPDATE categorys SET `Name` = ?, `Description` = ? , `Visibility` =?, `Comments` = ? ,`Ads`=?  WHERE `id` = ? ");
                     $connection->execute([$_POST['categoryName'] , $_POST['categoryName'] , $_POST['flexRadioVisibility'] ,$_POST['flexRadioComments'],$_POST['flexRadioAds'], $_POST['cateId']]);
                     $data = $connection->rowCount();
                     echo $data;
@@ -142,15 +142,15 @@
             }
         }elseif($_POST['formType'] === 'delete-cate'){
             if(isset($_POST['cateId'])){
-                $check = checkField('shop.categorys' , '*' , [
+                $check = checkField('categorys' , '*' , [
                     'filed_name' => 'id',
                     'value' => clean($_POST['cateId'])
                 ]);
 
                 if ($check > 0){
-                    $e = addLog('Deleting Category: ' , ['fieldName'=>'id' ,'table' => 'shop.categorys' , 'value' => $_POST['cateId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
+                    $e = addLog('Deleting Category: ' , ['fieldName'=>'id' ,'table' => 'categorys' , 'value' => $_POST['cateId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
 
-                    $connection = $conn->prepare('DELETE FROM shop.categorys WHERE id = ? ');
+                    $connection = $conn->prepare('DELETE FROM categorys WHERE id = ? ');
                     $connection->execute([$_POST['cateId']]);
                     $done = $connection->rowCount();
                     echo $done;
@@ -158,29 +158,29 @@
             }
         }elseif($_POST['formType'] === 'ShowInfoProduct'){
             if (isset($_POST['productId'])) {
-                $check = checkField('shop.products', '*', [
+                $check = checkField('products', '*', [
                     'filed_name' => 'product_id',
                     'value' => clean($_POST['productId'])
                 ]);
             }
             if ($check > 0){
-                $e = addLog('Show Product Info: ' , ['fieldName'=>'product_id' ,'table' => 'shop.products' , 'value' => $_POST['productId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
-                $data = fetchMyColumn('Name,Description,price,Added_Date,Added_by,Category,tags,Country_Made,Status,Rating,Image', 'shop.products' , "product_id = " . $_POST['productId']);
+                $e = addLog('Show Product Info: ' , ['fieldName'=>'product_id' ,'table' => 'products' , 'value' => $_POST['productId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
+                $data = fetchMyColumn('Name,Description,price,Added_Date,Added_by,Category,tags,Country_Made,Status,Rating,Image', 'products' , "product_id = " . $_POST['productId']);
                 echo json_encode($data);
 
             }
         }elseif($_POST['formType'] === 'delete-product'){
             if (isset($_POST['productId'])) {
-                $check = checkField('shop.products', '*', [
+                $check = checkField('products', '*', [
                     'filed_name' => 'product_id',
                     'value' => clean($_POST['productId'])
                 ]);
                 if($check >  0){
-                    $e = addLog('Deleting Product: ' , ['fieldName'=>'product_id' ,'table' => 'shop.products' , 'value' => $_POST['productId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
-                    $image = fetchMyColumn('Image','shop.products','product_id="'.$_POST['productId'].'"','data','One');
+                    $e = addLog('Deleting Product: ' , ['fieldName'=>'product_id' ,'table' => 'products' , 'value' => $_POST['productId'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
+                    $image = fetchMyColumn('Image','products','product_id="'.$_POST['productId'].'"','data','One');
                     $directory = dirname(__DIR__).'\data\uploads\\' . $image['Image'];
                     unlink($directory);
-                    $connection = $conn->prepare("DELETE FROM shop.products WHERE product_id = ?");
+                    $connection = $conn->prepare("DELETE FROM products WHERE product_id = ?");
                     $connection->execute([$_POST['productId']]);
                     $res = $connection->rowCount();
                     echo $res;
@@ -194,7 +194,6 @@
                     echo 0;
                     exit();
                 }
-                    
                 
                 $location = dirname(__DIR__) . "\data\uploads\\";
                 $files = scandir($location, SCANDIR_SORT_DESCENDING);
@@ -219,7 +218,7 @@
                 $product_image = $produtImageName;
 
                 addLog('Add New Product: "' .$_POST['name'].'"' ,$_SESSION['username'] );
-                $connection = $conn->prepare("INSERT INTO shop.products(Name,Description,Price,Added_Date,Country_Made,status,Category,Added_by,tags,Rating,Image) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+                $connection = $conn->prepare("INSERT INTO products(Name,Description,Price,Added_Date,Country_Made,status,Category,Added_by,tags,Rating,Image) VALUES(?,?,?,?,?,?,?,?,?,?,?)");
                 $connection->execute(
                     [$_POST['name'],
                     $_POST['description'],
@@ -239,14 +238,14 @@
 
         }elseif($_POST['formType'] === 'EditeProduct'){
             if (checkIssetFields($_POST, ['product_Id','name','description' , 'price' ,'addedDate' ,'addedBy' ,'category' , 'tags','madeOn' , 'status','rating'])) {
-                $check = checkField('shop.products' , '*' , ['filed_name' => 'product_id','value' => clean($_POST['product_Id'])]);
+                $check = checkField('products' , '*' , ['filed_name' => 'product_id','value' => clean($_POST['product_Id'])]);
                 
                 if($check > 0){
                     addLog('editing Category: "' .$_POST['name'].'"' ,$_SESSION['username'] );
                     $method = cleanListOfFieldes($_POST);
                     if(isset($_FILES['img'])){
                         // get Current Image
-                        $currentImage = fetchMyColumn('Image','shop.products','product_id = '. $_POST['product_Id'],'data','One')['Image'];
+                        $currentImage = fetchMyColumn('Image','products','product_id = '. $_POST['product_Id'],'data','One')['Image'];
                         // get Name of The Current Image and store it
                         $location = dirname(__DIR__) . "\data\uploads\\" . $currentImage; 
                         // unlick it
@@ -258,7 +257,7 @@
                     }else{
                         $image = '';
                     };
-                    $connection = $conn->prepare("UPDATE shop.products SET `Name` = ?, `Description` = ? , `Price` =?, `Added_Date` = ? ,`Country_Made`= ?,`Added_by`=?,`tags`=? ,`Status` = ? ,`Rating` = ? $image WHERE `product_id` = ? ");
+                    $connection = $conn->prepare("UPDATE products SET `Name` = ?, `Description` = ? , `Price` =?, `Added_Date` = ? ,`Country_Made`= ?,`Added_by`=?,`tags`=? ,`Status` = ? ,`Rating` = ? $image WHERE `product_id` = ? ");
                     if(!empty($image)){
                         $container = [$method['name'] , $method['description'] , $method['price'] ,$method['addedDate'],$method['madeOn'], $method['addedBy'], $method['tags'],$method['status'],$method['rating'],$currentImage,$method['product_Id']];
                     }else{
@@ -276,26 +275,26 @@
                 }
             }
         }elseif($_POST['formType'] === 'checkFor-user&categorys'){
-            if(sqlCount('username','shop.users') and sqlCount('Name','shop.categorys')){
+            if(sqlCount('username','users') and sqlCount('Name','categorys')){
                 echo '1';
             }else{
                 echo '0';
             }
         }elseif($_POST['formType'] === 'product-activate'){
             $productId = $_POST['product_id'];
-            $check = checkField('shop.products' , 'Name' , [
+            $check = checkField('products' , 'Name' , [
                 'filed_name' => 'product_id',
                 'value' => clean($productId)
             ]);
             if ($check > 0){
-                addLog('Activating Product: ' , ['fieldName'=>'product_id' ,'table' => 'shop.products' , 'value' => $_POST['product_id'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
-                $connection = $conn -> prepare("UPDATE shop.products SET Status = '1' WHERE product_id = ?");
+                addLog('Activating Product: ' , ['fieldName'=>'product_id' ,'table' => 'products' , 'value' => $_POST['product_id'] , 'getField' => 'Name'] ,true  , $_SESSION['username']);
+                $connection = $conn -> prepare("UPDATE products SET Status = '1' WHERE product_id = ?");
                 $connection -> execute([$productId]);
                 echo 1;
             }
 
         }elseif($_POST['formType'] === 'addNewComment'){
-            $connection = $conn->prepare("INSERT INTO shop.comments(comment_text,added_by,item_id) VALUES(? ,? ,?) ");
+            $connection = $conn->prepare("INSERT INTO comments(comment_text,added_by,item_id) VALUES(? ,? ,?) ");
             $connection->execute([
                 $_POST['commentValue'],
                 $_SESSION['user_id'],
@@ -307,12 +306,12 @@
         }elseif($_POST['formType'] == 'DeleteComment'){
             // check for id an the other
             if (isset($_POST['commentId'])) {
-                $check = checkField('shop.comments', '*', [
+                $check = checkField('comments', '*', [
                     'filed_name' => 'comment_id',
                     'value' => clean($_POST['commentId'])
                 ],'available','AND added_by="'.$_SESSION['user_id'].'"');
                 if($check >  0){
-                    $connection = $conn->prepare("DELETE FROM shop.comments WHERE comment_id = ?");
+                    $connection = $conn->prepare("DELETE FROM comments WHERE comment_id = ?");
                     $connection->execute([$_POST['commentId']]);
                     $res = $connection->rowCount();
                     echo $res;
@@ -320,26 +319,26 @@
             }
         }elseif($_POST['formType'] === 'user-ban'){
             $userId = $_POST['user_id'];
-            $check = checkField('shop.users' , '*' , [
+            $check = checkField('users' , '*' , [
                 'filed_name' => 'user_id',
                 'value' => clean($userId)
             ]);
             if ($check > 0){
-                addLog('Ban User: ' , ['fieldName'=>'user_id' ,'table' => 'shop.users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
-                $connection = $conn -> prepare("UPDATE shop.users SET trust_status = 0 WHERE user_id = ?");
+                addLog('Ban User: ' , ['fieldName'=>'user_id' ,'table' => 'users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
+                $connection = $conn -> prepare("UPDATE users SET trust_status = 0 WHERE user_id = ?");
                 $connection -> execute([$userId]);
                 echo 1;
             }
 
         }elseif($_POST['formType'] === 'user-unBan'){
             $userId = $_POST['user_id'];
-            $check = checkField('shop.users' , '*' , [
+            $check = checkField('users' , '*' , [
                 'filed_name' => 'user_id',
                 'value' => clean($userId)
             ]);
             if ($check > 0){
-                addLog('Ban User: ' , ['fieldName'=>'user_id' ,'table' => 'shop.users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
-                $connection = $conn -> prepare("UPDATE shop.users SET trust_status = 1 WHERE user_id = ?");
+                addLog('Ban User: ' , ['fieldName'=>'user_id' ,'table' => 'users' , 'value' => $_POST['user_id'] , 'getField' => 'username'] ,true  , $_SESSION['username']);
+                $connection = $conn -> prepare("UPDATE users SET trust_status = 1 WHERE user_id = ?");
                 $connection -> execute([$userId]);
                 echo 1;
             }
@@ -347,8 +346,6 @@
 
             $target_dir =  dirname(__DIR__) .'\addProductCash\\';
             
-
-
             $resource = explode('.',preg_replace('/\./','', $_FILES['fileName']['name'],substr_count($_FILES['fileName']['name'],'.') - 1))[1];
 
             $imageName = strval(random_int(10000,213144)) .'.'. $resource;
@@ -371,29 +368,74 @@
         }elseif($_POST['formType'] == 'setting-update'){
 
             if( isset($_POST['email']) and isset($_POST['maintenanceMode']) and $_POST['maintenanceMode'] == 1 or $_POST['maintenanceMode'] == 0 ){
-                $connection = $conn->prepare("UPDATE shop.settings SET maintenance_mode = ?, email = ? WHERE id = ?");
+                $connection = $conn->prepare("UPDATE settings SET maintenance_mode = ?, email = ? WHERE id = ?");
                 $connection->execute([$_POST['maintenanceMode'],$_POST['email'] , 1]);
             }
         }elseif($_POST['formType'] == 'delete-log'){
-            $connection = $conn->prepare("DELETE FROM shop.log");
+            $connection = $conn->prepare("DELETE FROM log");
             $connection->execute();
             
         }elseif($_POST['formType'] == 'deleteComment'){
                 if(isset($_POST['commentId'])){
-                    $check = checkField('shop.comments' , '*' , [
+                    $check = checkField('comments' , '*' , [
                         'filed_name' => 'comment_id',
                         'value' => clean($_POST['commentId'])
                     ]);
                     if ($check > 0){
-    
-    
-                        $connection = $conn->prepare('DELETE FROM shop.comments WHERE comment_id = ? ');
+                        $connection = $conn->prepare('DELETE FROM comments WHERE comment_id = ? ');
                         $connection->execute([$_POST['commentId']]);
                         $done = $connection->rowCount();
                         echo $done;
                         
                     }
                 }
+        }elseif($_POST['formType'] == "couponDo"){
+            //check if there is a product with that id
+            if(isset($_POST['product_id']) and is_numeric($_POST['product_id']) and isset($_POST['couponVal']) and strlen(clean($_POST['couponVal']))){
+                $productId = $_POST['product_id'];
+                $check = checkField('products' , 'Name' , [
+                    'filed_name' => 'product_id',
+                    'value' => clean($productId)
+                ],'available',' AND Status = 1');
+                if($check){
+
+                    // get coupon
+                    $connection = $conn->prepare("SELECT expire,new_price FROM coupons WHERE product_main = ? AND coupon_code = ?");
+                    $connection->execute([$_POST['product_id'] , clean($_POST['couponVal'])]);
+                    $data = $connection->fetch();
+                    // check for expire date
+                    $end = strtotime($data['expire']);
+                    $start = strtotime(date("Y-m-d H:i:s"));
+                    if(!($start >= $end)){
+                        echo $data['new_price'];
+                    }
+                    
+                    if($data){
+                        // get Used Times
+                        $usedTimes = fetchMyColumn('used_times','coupons','product_main='.$_POST['product_id'],'data','One');
+                        $times = intval($usedTimes['used_times']) + 1;
+                        // icrease User Times 
+                        $connection = $conn->prepare("UPDATE coupons SET used_times = $times WHERE product_main = {$_POST['product_id']}");
+                        $connection->execute();
+                    }
+
+                }
             }
-    }
-    
+            
+        }elseif($_POST['formType'] == 'delete-coupon'){
+            if(isset($_POST['couponId'])){
+                $check = checkField('coupons' , '*' , [
+                    'filed_name' => 'coupon_id',
+                    'value' => clean($_POST['couponId'])
+                ]);
+                if ($check > 0){
+                    $connection = $conn->prepare('DELETE FROM coupons WHERE coupon_id = ? ');
+                    $connection->execute([$_POST['couponId']]);
+                    $done = $connection->rowCount();
+                    echo $done;
+                    
+                }
+            }
+
+        }
+    };

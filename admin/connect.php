@@ -1,11 +1,12 @@
 <?php 
     
-    $dsn = 'mysql:host=localhost;dbanme=shop';
+    $dsn = 'mysql:host=localhost;dbname=shop';
     $user = 'root';
     $pass = '';
     $servername = '';
     $option = array(
         PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+        PDO::ATTR_PERSISTENT => true
     );
     
     try{

@@ -12,7 +12,7 @@ include 'init.php';
 include $functions_directory . 'sql_functions.php';
 
 
-$settingsData = fetchMyColumn('*','shop.settings','id=1','data','One');
+$settingsData = fetchMyColumn('*','settings','id=1','data','One');
 
 ?>
 

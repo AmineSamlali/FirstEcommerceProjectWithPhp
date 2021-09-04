@@ -24,7 +24,7 @@
 <div class="main" id="thisdiv">
         <ul class="list-unstyled latest-users">
             <?php
-                $connection = $conn->prepare('SELECT * FROM shop.log ORDER BY log_datetime DESC');
+                $connection = $conn->prepare('SELECT * FROM log ORDER BY log_datetime DESC');
                 $connection->execute();
                 $data = $connection->fetchAll();
 

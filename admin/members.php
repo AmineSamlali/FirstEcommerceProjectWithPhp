@@ -22,9 +22,9 @@
     
                     if(strlen(clean($password1)) === strlen(clean($password2))){
                         
-                        if (checkField('shop.users','*',['filed_name'=>'username','value'=>clean($username)]) === 0){
+                        if (checkField('users','*',['filed_name'=>'username','value'=>clean($username)]) === 0){
                             
-                            $sql = $conn->prepare('INSERT INTO shop.users(username,password,full_name,email,reg_status ,user_log) VALUES(:username,:password,:full_name,:email,:reg_status,:user_log) ');
+                            $sql = $conn->prepare('INSERT INTO users(username,password,full_name,email,reg_status ,user_log) VALUES(:username,:password,:full_name,:email,:reg_status,:user_log) ');
                             $user_log = [
                                 'CreatedBy' => $_SESSION['username'],
                                 'CreatedDate' => date("Y-m-d H:i:s")
@@ -84,7 +84,7 @@
 
                     <?php
         
-            $connect = $conn->prepare('SELECT * FROM shop.users WHERE group_id != 1 ORDER BY `user_id` DESC');
+            $connect = $conn->prepare('SELECT * FROM users WHERE group_id != 1 ORDER BY `user_id` DESC');
             $connect->execute();
 
             $data = $connect->fetchAll();
@@ -267,7 +267,7 @@
 <script>
 
 // username Check On add user Form
-checkFileds('#exampleInputUserName1' , 8,'ajax_check.php' , 'btnAdd' , 'usernameStatus',{fieldName:'username',tableName:'shop.users'});
+checkFileds('#exampleInputUserName1' , 8,'ajax_check.php' , 'btnAdd' , 'usernameStatus',{fieldName:'username',tableName:'users'});
 
 
 </script>

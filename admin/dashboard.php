@@ -23,7 +23,7 @@ include $functions_directory . 'sql_functions.php';
                     <div class="info">
                         Total Members
                         <span>
-                            <a href="members.php"><?php echo sqlCount('username', 'shop.users WHERE user_id != 1'); ?></a>
+                            <a href="members.php"><?php echo sqlCount('username', 'users WHERE user_id != 1'); ?></a>
                         </span>
                     </div>
                 </div>
@@ -35,7 +35,7 @@ include $functions_directory . 'sql_functions.php';
                         Pending Members
                         <span>
                             <a
-                                href="members.php"><?php echo sqlCount('username', 'shop.users WHERE reg_status = 0 AND group_id != 1') ?></a>
+                                href="members.php"><?php echo sqlCount('username', 'users WHERE reg_status = 0 AND group_id != 1') ?></a>
                             </a>
                         </span>
                     </div>
@@ -48,7 +48,7 @@ include $functions_directory . 'sql_functions.php';
                         Total Items
                         <span>
                             <a
-                                href="members.php"><?php echo sqlCount('product_id', 'shop.products') ?></a>
+                                href="members.php"><?php echo sqlCount('product_id', 'products') ?></a>
                             </a>
 
 
@@ -62,7 +62,7 @@ include $functions_directory . 'sql_functions.php';
                     <div class="info">
                         Total Comments
                         <span>
-                            <a href="comments.php"><?php echo sqlCount('comment_id', 'shop.comments') ?></a>
+                            <a href="comments.php"><?php echo sqlCount('comment_id', 'comments') ?></a>
                         </span>
                     </div>
                 </div>
@@ -87,7 +87,7 @@ include $functions_directory . 'sql_functions.php';
 								<ul class="list-unstyled latest-users">
                                 
                                         <?php 
-										foreach(getLatest('user_id,username , registration_date','shop.users WHERE group_id != 1','user_id',5) as $value){
+										foreach(getLatest('user_id,username , registration_date','users WHERE group_id != 1','user_id',5) as $value){
 											echo "<li>" .'"'.$value['username'] .'"'."<small class = \"text-muted\"> Registered At ".$value['registration_date']."</small> <span class=\"btn btn-primary pull-right\" userid = ".$value['user_id']." data-toggle=\"modal\" data-target=\"#myModal\" onclick=showProfile(this) ><i class=\"far fa-eye\"></i> Show info</span></li>";
 										}
 									?>
@@ -116,12 +116,12 @@ include $functions_directory . 'sql_functions.php';
 
                                     <?php 
                         $sql = "SELECT
-                            shop.products.*,
-                            shop.users.username AS userName
+                            products.*,
+                            users.username AS userName
                         FROM
-                            shop.products
-                        INNER JOIN shop.users ON
-                            shop.users.user_id = shop.products.Added_by
+                            products
+                        INNER JOIN users ON
+                            users.user_id = products.Added_by
                             ORDER BY product_id DESC LIMIT 5";
                             $connect = $conn ->prepare($sql);
                             $connect->execute();
@@ -158,15 +158,15 @@ include $functions_directory . 'sql_functions.php';
 
                     <?php 
                         $sql = "SELECT
-                        shop.comments.*,
-                        shop.products.Name AS productName,
-                        shop.users.username AS userName
+                        comments.*,
+                        products.Name AS productName,
+                        users.username AS userName
                     FROM
-                        shop.comments
-                    INNER JOIN shop.products ON
-                        shop.products.product_id = shop.comments.item_id
-                    INNER JOIN shop.users ON
-                        shop.users.user_id = shop.comments.Added_by
+                        comments
+                    INNER JOIN products ON
+                        products.product_id = comments.item_id
+                    INNER JOIN users ON
+                        users.user_id = comments.Added_by
                         ORDER BY comment_id LIMIT 5";
 
                         $connect = $conn ->prepare($sql);

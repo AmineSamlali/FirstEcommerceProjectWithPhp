@@ -1,4 +1,5 @@
-<?php  
+<?php 
+    ob_start();
     session_start();
     session_regenerate_id();
     if(!isset($_SESSION['username'])){
@@ -16,7 +17,7 @@
     checkUserStatus($_SESSION['username'],sha1($_SESSION['password']),'',true);
     checkMaintenanceMode();
 
-    $check = checkField('shop.products', 'Name', [
+    $check = checkField('products', 'Name', [
         'filed_name' => 'product_id',
         'value' => clean($_GET['prd']),
     ], $mode = 'available', 'AND Status != 0');
@@ -25,7 +26,7 @@
         exit();
     }
     // handling admin
-    $checkCurrentSession = $conn->prepare("SELECT product_id FROM shop.products WHERE product_id = ? AND Added_by = ?");
+    $checkCurrentSession = $conn->prepare("SELECT product_id FROM products WHERE product_id = ? AND Added_by = ?");
     $checkCurrentSession->execute([ $_GET['prd'] ,$_SESSION['user_id'] ]);
     $stuts = $checkCurrentSession->rowCount();
     if($stuts){
@@ -34,17 +35,16 @@
     };
 
 
-    $connection = $conn->prepare("SELECT * FROM shop.messages WHERE added_by = ? AND added_to = ?");
+    $connection = $conn->prepare("SELECT * FROM messages WHERE added_by = ? AND added_to = ?");
     $connection->execute([$_SESSION['user_id'],$_GET['prd']]);
     $data = $connection->rowCount();
-
     if($data){
         header('location:mymessages.php');
         exit();
 
     }
 
-    $product = fetchMyColumn('product_id,Name,Description,Price,Added_Date,Image','shop.products','product_id = "'.$_GET['prd'].'"','data','One');
+    $product = fetchMyColumn('product_id,Name,Description,Price,Added_Date,Image','products','product_id = "'.$_GET['prd'].'"','data','One');
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
         if(isset($_POST['message']) and !empty($_POST['message'])){
 
@@ -52,17 +52,16 @@
             $message = clean($_POST['message']);
             $added_by = $_SESSION['user_id'];
             $added_at = $_GET['prd'];
-            $connetion = $conn->prepare("INSERT INTO shop.messages(added_by,added_to) VALUES(?,?)");
+            $connetion = $conn->prepare("INSERT INTO messages(added_by,added_to) VALUES(?,?)");
             $connetion->execute([$added_by,$added_at]);
             $lastId = $conn->lastInsertId("message_id");
-            $connetion2 = $conn->prepare("INSERT INTO shop.messages_sms(message_main,sms_from,sms_text) VALUE(?,?,?)");
+            $connetion2 = $conn->prepare("INSERT INTO messages_sms(message_main,sms_from,sms_text) VALUE(?,?,?)");
             $connetion2->execute([$lastId,$added_by,$message]);
             $res = $connetion->rowCount();
             if($res){
                 header('location:mymessages.php');
                 exit();
             }
-            outPutArray([$added_at,$added_by,$message]);
         }
     }
     
@@ -134,3 +133,4 @@
 </body>
 
 </html>
+<?php ob_end_flush(); ?>

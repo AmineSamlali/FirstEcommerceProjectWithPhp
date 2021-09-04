@@ -54,7 +54,7 @@ checkMaintenanceMode();
 <?php
 	// check if there is a Category in path;
 	if(isset($_GET['categorys']) and !empty($_GET['categorys'])){
-		$check = checkField('shop.categorys', 'Name', [
+		$check = checkField('categorys', 'Name', [
 			'filed_name' => 'id',
 			'value' => clean($_GET['categorys']),
 		]);
@@ -62,9 +62,9 @@ checkMaintenanceMode();
 			header('location:products.php');
 			exit();
 		}
-		$allItems = fetchAllFromTeble('*','shop.products','WHERE Status = 1 AND Category='.$_GET['categorys'] .' ORDER BY product_id DESC');
+		$allItems = fetchAllFromTeble('*','products','WHERE Status = 1 AND Category='.$_GET['categorys'] .' ORDER BY product_id DESC');
 	}elseif(isset($_GET['userproducts']) and !empty($_GET['userproducts'])){
-		$check = checkField('shop.users', 'username', [
+		$check = checkField('users', 'username', [
 			'filed_name' => 'user_id',
 			'value' => clean($_GET['userproducts']),
 		]);
@@ -72,12 +72,12 @@ checkMaintenanceMode();
 			header('location:products.php');
 			exit();
 		}
-		$allItems = fetchAllFromTeble('*','shop.products','WHERE Status = 1 AND Added_by='.$_GET['userproducts'].' ORDER BY product_id DESC');
+		$allItems = fetchAllFromTeble('*','products','WHERE Status = 1 AND Added_by='.$_GET['userproducts'].' ORDER BY product_id DESC');
 	}elseif(isset($_GET['tagname']) and !empty($_GET['tagname'])){
-		$tagname = $_GET['tagname'];
-		$allItems = fetchAllFromTeble('*','shop.products',"WHERE Status = 1 AND tags like '%$tagname%'".' ORDER BY product_id DESC');
+		$tagname = clean($_GET['tagname']);
+		$allItems = fetchAllFromTeble('*','products',"WHERE Status = 1 AND tags like '%$tagname%'".' ORDER BY product_id DESC');
 	}else{
-		$allItems = fetchAllFromTeble('*','shop.products','WHERE Status = 1'.' ORDER BY product_id DESC');
+		$allItems = fetchAllFromTeble('*','products','WHERE Status = 1'.' ORDER BY product_id DESC');
 	}
 	$jsAllproduct = json_encode($allItems);
 ?>
@@ -214,7 +214,10 @@ function isURL(string) {
     }
     </script>
 
+    
+
 </div>
 
 
 <?php include  $tpl . 'footer.php' ?>
+

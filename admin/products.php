@@ -41,7 +41,7 @@
                     <tr>
                         <?php
                         // SELECT products.* , categorys.Name AS categortName , users.username AS AddedBy FROM products INNER JOIN categorys ON categorys.id = products.Category INNER JOIN users on users.user_id = products.Added_by
-                            $connection = $conn->prepare("SELECT shop.products.* , shop.categorys.Name AS categortName , shop.users.username AS AddedBy FROM shop.products INNER JOIN shop.categorys ON shop.categorys.id = shop.products.Category INNER JOIN shop.users on shop.users.user_id = shop.products.Added_by ORDER BY `product_id` DESC");
+                            $connection = $conn->prepare("SELECT products.* , categorys.Name AS categortName , users.username AS AddedBy FROM products INNER JOIN categorys ON categorys.id = products.Category INNER JOIN users on users.user_id = products.Added_by ORDER BY `product_id` DESC");
                             $connection->execute();
                             $data = $connection->fetchAll();
                             foreach($data as $product){
@@ -116,7 +116,7 @@
                                             <select name="productAddedByEdite" id="productAddedByX" class="form-control"
                                                 placeholder="Add AddedBy To the product" autocomplete="off" required>
                                                 <?php 
-                                                    $connection = $conn->prepare("SELECT user_id,username FROM shop.users WHERE group_id != 1");
+                                                    $connection = $conn->prepare("SELECT user_id,username FROM users WHERE group_id != 1");
                                                     $connection->execute();
                                                     $data = $connection->fetchAll();
                                                     foreach($data as $user){
@@ -132,7 +132,7 @@
                                                 class="form-control" placeholder="Add Category To the product"
                                                 autocomplete="off" required>
                                                 <?php 
-                                                    $connection = $conn->prepare("SELECT id,Name FROM shop.categorys");
+                                                    $connection = $conn->prepare("SELECT id,Name FROM categorys");
                                                     $connection->execute();
                                                     $data = $connection->fetchAll();
                                                     foreach($data as $user){
@@ -251,7 +251,7 @@
                                             <select name="productAddedByEdite" id="productAddedBy" class="form-control"
                                                 placeholder="Add AddedBy To the product" autocomplete="off">
                                                 <?php 
-                                                    $connection = $conn->prepare("SELECT user_id,username FROM shop.users WHERE group_id != 1");
+                                                    $connection = $conn->prepare("SELECT user_id,username FROM users WHERE group_id != 1");
                                                     $connection->execute();
                                                     $data = $connection->fetchAll();
                                                     foreach($data as $user){
@@ -272,7 +272,7 @@
                                                 class="form-control" placeholder="Add Category To the product"
                                                 autocomplete="off">
                                                 <?php 
-                                                    $connection = $conn->prepare("SELECT id,Name FROM shop.categorys");
+                                                    $connection = $conn->prepare("SELECT id,Name FROM categorys");
                                                     $connection->execute();
                                                     $data = $connection->fetchAll();
                                                     foreach($data as $user){

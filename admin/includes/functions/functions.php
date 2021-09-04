@@ -42,6 +42,16 @@
         }
         return true;
     }
+    
+    function checkFiledsLength($method,$list){
+        for($i = 0 ; $i < count($list); $i++){
+            if(!strlen($method[$list[$i]])){
+                return false;
+            };
+        };
+        return true;
+    };
+
     function doAlert($status,$yes,$no){
         if($status){
             return "<script>alert('$yes')</script>";

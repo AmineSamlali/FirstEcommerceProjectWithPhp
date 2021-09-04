@@ -18,7 +18,7 @@
             $newfullName = $_POST['fullName'];
             $newEmail = $_POST['email'];
             if (isset($newfullName) && isset($newEmail) && strlen($newfullName) >= 8 && strlen($newEmail)){
-                $update = $conn -> prepare('UPDATE shop.users SET full_name = ?, email = ? WHERE user_id = ? ');
+                $update = $conn -> prepare('UPDATE users SET full_name = ?, email = ? WHERE user_id = ? ');
                 $update->execute([$newfullName , $newEmail , $_SESSION['user_id']]);
                 $_SESSION['full_name'] = $newfullName;
                 $status = $update->rowCount();
@@ -37,7 +37,7 @@
             
             if (isset($_POST['password1']) && isset($_POST['password2']) && strlen($_POST['password1']) >= 8 && strlen($_POST['password2'])){
 
-                $updatePwd = $conn->prepare('UPDATE shop.users SET `password` = ? WHERE `user_id` = ? AND password = ? ');
+                $updatePwd = $conn->prepare('UPDATE users SET `password` = ? WHERE `user_id` = ? AND password = ? ');
                 $updatePwd->execute([sha1($_POST['password2']) , $_SESSION['user_id'],sha1($_POST['password1'])]);
                 $status = $updatePwd->rowCount();
                 $message = ['message'=> ($status === 1) ? 'The Password Has Been Changed':'Please Enter True Password','class' => ($status === 1) ? 'success':'danger' ];

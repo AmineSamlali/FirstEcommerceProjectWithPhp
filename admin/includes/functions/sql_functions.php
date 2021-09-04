@@ -48,10 +48,14 @@
     }
     function updateIp($user_id , $ip){
         global $conn;
-        $connection = $conn->prepare("UPDATE shop.users SET user_ip = ? WHERE user_id = ?");
+        $connection = $conn->prepare("UPDATE users SET user_ip = ? WHERE user_id = ?");
         $connection->execute([$ip , $user_id]);
         return $connection->rowCount();
     }
+
+
+
+    
     function addLog($log , $by , $mode = false , $who = ''){
         global $conn;
         
@@ -70,10 +74,14 @@
             $who = $by;
         }
 
-        $connection2 = $conn->prepare("INSERT INTO shop.log(log_text , log_datetime , log_by)VALUE(? ,? ,?) ");
+        $connection2 = $conn->prepare("INSERT INTO log(log_text , log_datetime , log_by)VALUE(? ,? ,?) ");
         $connection2->execute([$log .$toAction . ' By "'.$who.'"' , date('Y-m-d H:i:s') ,$who]);
         $done = $connection2->rowCount();
     }
+
+
+
+
     function fetchAllFromTeble($field,$table,$condition = ''){
         global $conn;
         $connection = $conn->prepare("SELECT $field FROM $table $condition");
@@ -84,7 +92,7 @@
     function checkUserStatus( $username = null , $password = null,$userId = null, $redirectMode=false ){
         global $conn;
         if($username and $password){
-            $connection = $conn->prepare("SELECT trust_status FROM shop.users WHERE username = ? AND password = ?");
+            $connection = $conn->prepare("SELECT trust_status FROM users WHERE username = ? AND password = ?");
             $connection->execute([$username,$password]);
             $data = $connection->fetch();
             if($connection->rowCount()){
@@ -105,7 +113,7 @@
 
     function checkMaintenanceMode(){
         global $conn;
-        $connection = $conn->prepare("SELECT maintenance_mode FROM shop.settings WHERE id = 1");
+        $connection = $conn->prepare("SELECT maintenance_mode FROM settings WHERE id = 1");
         $connection->execute();
         $data = $connection->fetchColumn();
         if (!isset($_SESSION['group_id'])) {

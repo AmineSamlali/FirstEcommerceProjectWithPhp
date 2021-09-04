@@ -156,7 +156,7 @@ img{ max-width:100%;}
 <div class="container">
 <h3 class=" text-center">Messaging</h3>
 <div class="messaging">
-    <div class="inbox_msg">
+    <div id="messageContainer" class="inbox_msg">
         <div class="inbox_people">
           <div class="headind_srch">
             <div class="recent_heading">
@@ -178,15 +178,15 @@ img{ max-width:100%;}
 
             <?php
                 $connection = $conn->prepare("SELECT 
-                    shop.messages.*,
-                    shop.products.*,
-                    shop.users.Image as userImage,
-                    shop.users.username as userUserName
+                    messages.*,
+                    products.*,
+                    users.Image as userImage,
+                    users.username as userUserName
                   FROM
-                      shop.messages
-                  INNER JOIN shop.products ON shop.products.product_id = shop.messages.added_to
-                  INNER JOIN shop.users ON shop.users.user_id = shop.messages.added_by
-                  WHERE shop.messages.added_by = ? or shop.products.Added_by = ?  ORDER BY messages.message_id DESC");
+                      messages
+                  INNER JOIN products ON products.product_id = messages.added_to
+                  INNER JOIN users ON users.user_id = messages.added_by
+                  WHERE messages.added_by = ? or products.Added_by = ?  ORDER BY messages.message_id DESC");
                 $connection->execute([$_SESSION['user_id'],$_SESSION['user_id']]);
                 $messages = $connection->fetchAll();
                 foreach($messages as $message){
@@ -231,7 +231,7 @@ img{ max-width:100%;}
           <div id="msg_history" class="msg_history">
 
           </div>
-          <div class="type_msg">
+          <div id="inputMessage" class="type_msg">
             <div class="input_msg_write">
               <input id="userMessage" type="text" class="write_msg" placeholder="Type a message">
               <button class="msg_send_btn" id="sendMsg" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
@@ -269,6 +269,10 @@ img{ max-width:100%;}
       document.getElementById('msg_history').innerHTML = '';
       jsonData.forEach(msg => {
         let msgdiv = document.createElement('div')
+        let time = new Date(msg['sms_date']);
+        var  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let smsTime = time.getHours() +':'+time.getMinutes() + ((time.getHours() >= 12) ? ' PM' : ' AM') + ' | ' + time.getMonth() +' ' + months[time.getMonth()];
+
         if(msg['sms_from'] != <?php echo $_SESSION['user_id'] ?>){
           msgdiv.innerHTML = `
             <div class="incoming_msg">
@@ -276,7 +280,7 @@ img{ max-width:100%;}
                 <div class="received_msg">
                   <div class="received_withd_msg">
                     <p>${ msg['sms_text'] } </p>
-                    <span class="time_date"> 11:01 AM    |   June 9</span></div>
+                    <span class="time_date"> ${smsTime}</span></div>
                 </div>
               </div>
           `
@@ -284,7 +288,7 @@ img{ max-width:100%;}
           msgdiv.innerHTML = `<div class="outgoing_msg">
               <div class="sent_msg">
                 <p>${msg['sms_text']}</p>
-                <span class="time_date"> 11:01 AM    |    June 9</span> </div>
+                <span class="time_date">${smsTime}</span> </div>
             </div>`
         }
         document.getElementById('msg_history').appendChild(msgdiv)
@@ -301,7 +305,7 @@ img{ max-width:100%;}
 
     // check if there is No Messages From Charts 
   if(!document.getElementById('inbox_chat').children.length > 0){
-    alert('You Dont Have Any Messages')
+    document.getElementById('messageContainer').innerHTML = "<center><h1>Sorry You Don't Have Any Messages</h1></center>";
   }else{
     document.getElementById('inbox_chat').children[0].querySelector('.chat_people .chat_ib h5 a').click();
   }
@@ -321,6 +325,10 @@ img{ max-width:100%;}
             if(response.length > 0){
               response = response[0];
               let msgdiv = document.createElement('div')
+              let time = new Date(response['sms_date']);
+              var  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+              let smsTime = time.getHours() +':'+time.getMinutes() + ((time.getHours() >= 12) ? ' PM' : ' AM') + ' | ' + time.getMonth() +' ' + months[time.getMonth()];
+        
                 if(response['sms_from'] != <?php echo $_SESSION['user_id'] ?>){
                 msgdiv.innerHTML = `
                   <div class="incoming_msg">
@@ -328,7 +336,7 @@ img{ max-width:100%;}
                       <div class="received_msg">
                         <div class="received_withd_msg">
                           <p>${response['sms_text']}</p>
-                          <span class="time_date"> 11:01 AM    |    June 9</span></div>
+                          <span class="time_date"> ${smsTime}</span></div>
                       </div>
                     </div>
                 `
@@ -337,7 +345,7 @@ img{ max-width:100%;}
                 msgdiv.innerHTML = `<div class="outgoing_msg">
                     <div class="sent_msg">
                       <p>${response['sms_text']} </p>
-                      <span class="time_date"> 11:01 AM    |    June 9</span> </div>
+                      <span class="time_date"> ${smsTime}</span> </div>
                   </div>`
               }
               document.getElementById('msg_history').appendChild(msgdiv)

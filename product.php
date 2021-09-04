@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 session_regenerate_id();
 
@@ -19,7 +20,7 @@ if (!isset($_GET['itemid']) or empty($_GET['itemid']) or !is_numeric($_GET['item
 }else{
     $productId = $_GET['itemid'];
 
-    $check = checkField('shop.products', 'Name', [
+    $check = checkField('products', 'Name', [
         'filed_name' => 'product_id',
         'value' => clean($productId),
     ], $mode = 'available', 'AND Status != 0');
@@ -42,24 +43,25 @@ if (!$work) {
     exit();
 }
 
-// $data = fetchMyColumn('Name,Description,Added_Date,Price,Country_Made,Category,Added_by,tags','shop.products','product_id='.$productId,'data','One');
+// $data = fetchMyColumn('Name,Description,Added_Date,Price,Country_Made,Category,Added_by,tags','products','product_id='.$productId,'data','One');
 $connect = $conn->prepare("SELECT
-        shop.products.*,
-        shop.categorys.Name AS categoryName,
-        shop.categorys.id AS categorysId,
-        shop.users.username AS addedByWho
+        products.*,
+        categorys.Name AS categoryName,
+        categorys.id AS categorysId,
+        users.username AS addedByWho
         FROM
-        shop.products
-        INNER JOIN shop.categorys ON
-        shop.categorys.id = shop.products.Category
-        INNER JOIN shop.users ON
-        shop.users.user_id = shop.products.Added_by
-        AND shop.products.product_id = ?
+        products
+        INNER JOIN categorys ON
+        categorys.id = products.Category
+        INNER JOIN users ON
+        users.user_id = products.Added_by
+        AND products.product_id = ?
 ");
 
 $connect->execute([$productId]);
 $data = $connect->fetch();
 
+$oldPrice = $data['Price'];
 ?>
 
 
@@ -83,10 +85,10 @@ $data = $connect->fetch();
 			<ul class="list-unstyled">
 				<li>
 					<i class="fa fa-calendar fa-fw"></i>
-					<span>Added Date</span> : <?php echo $data['Added_Date']; ?>				</li>
+					<span>Added Date</span> : <?php echo $data['Added_Date']; ?> </li>
 				<li>
 					<i class="fa fa-money fa-fw"></i>
-					<span>Price</span> : <?php echo $data['Price']; ?>				</li>
+					<span>Price</span> : <span id='OldPrice'><?php echo $data['Price']; ?>$</span><span id="newPrice"></span> </li>
 				<li>
 					<i class="fa fa-building fa-fw"></i>
 					<span>Made In</span> : <?php echo $data['Country_Made']; ?>				</li>
@@ -140,13 +142,22 @@ $data = $connect->fetch();
                             echo '<i class="fa fa-reply-all"></i>';
                             echo '<span>Contact Option\'s</a></span> : <a class="btn btn-success" href="message.php?prd='.$productId.'" >Contact Seller</a></a>';
                             echo '</li>';
-                        }
-
-                    }
+                        };
+                    };
                 ?>
                 
+                <?php 
+                    if (isset($_SESSION['user_id'])) {
+                        if ($data['Added_by'] != $_SESSION['user_id']) {
+                            echo '<li>';
+                            echo '<i class="fa fa-reply-all"></i>';
+                            echo '<span>Coupon Code</span> : <input type="text" id="inputCoupon" placeholder="Add Coupon Code">';
+                            echo '</li>';
+                        }
+                    }
+                        
+                        ?>
 
-                
                 
 			</ul>
 		</div>
@@ -171,10 +182,10 @@ if (!isset($_SESSION['username'])) {
     <?php 
 
         $connect = $conn->prepare("SELECT
-        shop.categorys.Comments
+        categorys.Comments
     FROM
-        shop.products
-    INNER JOIN shop.categorys ON
+        products
+    INNER JOIN categorys ON
         categorys.id = products.Category
         AND products.product_id = ?");
     $connect->execute([$productId]);
@@ -210,16 +221,16 @@ if (isset($_SESSION['username'])) {
 
     <?php
         $connetion = $conn->prepare("SELECT
-                            shop.comments.comment_text,
-                            shop.comments.comment_id,
-                            shop.comments.added_by,
-                            shop.users.username as username,
-                            shop.users.image as picture
+                            comments.comment_text,
+                            comments.comment_id,
+                            comments.added_by,
+                            users.username as username,
+                            users.image as picture
 
                         FROM
-                            shop.comments
-                        INNER JOIN shop.users ON
-                            shop.users.user_id = shop.comments.added_by AND shop.comments.item_id=? ORDER BY comments.comment_id DESC");
+                            comments
+                        INNER JOIN users ON
+                            users.user_id = comments.added_by AND comments.item_id=? ORDER BY comments.comment_id DESC");
 
         $connetion->execute([$productId]);
         $data = $connetion->fetchAll();
@@ -276,5 +287,34 @@ function deleteComment(e){
 
 }
 
+if(document.getElementById('inputCoupon') != null){
+    document.getElementById('inputCoupon').addEventListener('input',(e)=>{
+    if(e.target.value.length >= 4){
+        $.post('admin/ajax_check.php',{
+            formType:'couponDo',
+            couponVal:e.target.value,
+            product_id:"<?php echo $productId; ?>"
+        },(res) => {
+            if(res.length > 0){
+                let newPrice = Math.round((parseInt("<?php echo $oldPrice ?>") * parseInt(res)) / 100) 
+                document.getElementById('inputCoupon').style = 'border-color:green;';
+                document.getElementById('OldPrice').style = 'text-decoration: line-through';
+                document.getElementById('newPrice').innerHTML = 'New Price is ' +'<strong>' + newPrice + '$</strong>'
+            }else{
+                document.getElementById('inputCoupon').style = 'border-color:red;';
+                document.getElementById('OldPrice').style = '';
+                document.getElementById('newPrice').innerHTML = ''
+
+            }
+        })
+    };
+})
+
+
+}
 </script>
 
+<?php 
+    ob_end_flush();
+
+?>

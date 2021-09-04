@@ -30,7 +30,7 @@
         if (strlen($_POST['username']) > 0 && strlen($_POST['password']) > 0){
             
             $hashedPwd = sha1($password);
-            $sql = $conn->prepare('SELECT user_id ,username, password , full_name , email ,registration_date,Image,group_id FROM shop.users WHERE username = ? AND password = ? AND group_id = 1');
+            $sql = $conn->prepare('SELECT user_id ,username, password , full_name , email ,registration_date,Image,group_id FROM users WHERE username = ? AND password = ? AND group_id = 1');
             $sql->execute([$username , $hashedPwd]);
             $data = $sql->fetch();
             $auth = $sql->rowCount();

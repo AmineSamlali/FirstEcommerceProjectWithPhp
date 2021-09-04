@@ -33,7 +33,7 @@ checkMaintenanceMode();
 
                 if($password === $password2){
                     
-                    $connection = $conn->prepare('UPDATE shop.users SET `full_name` = ? , `email` = ? ,`password` = ? WHERE `user_id` = ? ');
+                    $connection = $conn->prepare('UPDATE users SET `full_name` = ? , `email` = ? ,`password` = ? WHERE `user_id` = ? ');
                     $connection->execute([$fullName , $email,sha1($password),$_SESSION['user_id']]);
 
                     $_SESSION['full_name'] = $fullName;
@@ -49,7 +49,7 @@ checkMaintenanceMode();
                 
                 $fullName = clean($_POST['fullName']);
                 $email = clean($_POST['email']);
-                $connection = $conn->prepare('UPDATE shop.users SET `full_name` = ? , `email` = ?  WHERE `user_id` = ? ');
+                $connection = $conn->prepare('UPDATE users SET `full_name` = ? , `email` = ?  WHERE `user_id` = ? ');
                 $connection->execute([$fullName , $email,$_SESSION['user_id']]);
 
                 $_SESSION['full_name'] = $fullName;
@@ -95,7 +95,7 @@ checkMaintenanceMode();
             $product_image = $produtImageName;
             
 
-            $connection = $conn->prepare("UPDATE shop.users SET `image` = ?   WHERE `user_id` = ?");
+            $connection = $conn->prepare("UPDATE users SET `image` = ?   WHERE `user_id` = ?");
             $connection->execute([$product_image,$_SESSION['user_id']]);
 
             $_SESSION['picture'] = $product_image;
@@ -149,7 +149,7 @@ checkMaintenanceMode();
             <div class="row">
 
             <?php             
-                $products = fetchMyColumn('product_id,Name,Price,Description,Added_Date,Status,Image','shop.products',"Added_by = " .$_SESSION['user_id']. ' ORDER BY product_id DESC');
+                $products = fetchMyColumn('product_id,Name,Price,Description,Added_Date,Status,Image','products',"Added_by = " .$_SESSION['user_id']. ' ORDER BY product_id DESC');
                 if(!$products){
                     echo '<p class="col-sm-6">Sorry You Don\'t Have Any Products You can add it From <a href ="items.php" >Here</a>.</p>';
                 }
@@ -261,18 +261,18 @@ checkMaintenanceMode();
             <div class="panel-body">
                 <?php 
                 $sql = "SELECT
-                shop.comments.*,
-                shop.products.Name AS productName,
-                shop.products.product_id AS productId,
+                comments.*,
+                products.Name AS productName,
+                products.product_id AS productId,
 
-                shop.users.username AS userName
+                users.username AS userName
             FROM
-                shop.comments
-            INNER JOIN shop.products ON
-                shop.products.product_id = shop.comments.item_id
-            INNER JOIN shop.users ON
-                shop.users.user_id = shop.comments.Added_by
-            WHERE shop.products.Added_by = {$_SESSION['user_id']}
+                comments
+            INNER JOIN products ON
+                products.product_id = comments.item_id
+            INNER JOIN users ON
+                users.user_id = comments.Added_by
+            WHERE products.Added_by = {$_SESSION['user_id']}
             ORDER BY
                 comment_id
                 DESC

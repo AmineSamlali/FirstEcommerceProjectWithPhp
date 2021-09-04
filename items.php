@@ -1,4 +1,5 @@
 <?php 
+ob_start();
 
 session_start();
     if(!isset($_SESSION['username'])){
@@ -31,7 +32,7 @@ checkMaintenanceMode();
 
             }
 			// check if there is the same product in the database;
-			$check = $conn->prepare("SELECT * FROM shop.products WHERE Name = ? AND Added_by = ?");
+			$check = $conn->prepare("SELECT * FROM products WHERE Name = ? AND Added_by = ?");
 			$check->execute([
 				$method['name'],
 				$_SESSION['user_id']				
@@ -61,7 +62,7 @@ checkMaintenanceMode();
 
                 $product_image = $produtImageName;
 
-				$connection = $conn->prepare("INSERT INTO shop.products(Name,Description,Price,Country_Made,Rating,Category,Added_by,tags,Image) VALUE(?,?,?,?,?,?,?,?,?)");
+				$connection = $conn->prepare("INSERT INTO products(Name,Description,Price,Country_Made,Rating,Category,Added_by,tags,Image) VALUE(?,?,?,?,?,?,?,?,?)");
 				$connection->execute([
 					$method['name'],
 					$method['description'],
@@ -156,7 +157,7 @@ checkMaintenanceMode();
                             <div class="form-group form-group-lg">
                                 <label class="col-sm-3 control-label">Rating</label>
                                 <div class="col-sm-10 col-md-9">
-                                    <select name="rating" required>
+                                    <select name="rating" class="form-control" required>
                                         <option value="">...</option>
                                         <option value="1">New</option>
                                         <option value="2">Like New</option>
@@ -170,10 +171,10 @@ checkMaintenanceMode();
                             <div class="form-group form-group-lg">
                                 <label class="col-sm-3 control-label">Category</label>
                                 <div class="col-sm-10 col-md-9">
-                                    <select name="category" required>
+                                    <select name="category" class="form-control" required>
                                         <option value="">...</option>
                                         <?php 
-											$data = fetchAllFromTeble('id,Name','shop.categorys');
+											$data = fetchAllFromTeble('id,Name','categorys');
 											
 											foreach($data as $option){
 												echo "<option value=".$option['id'].">".$option['Name']."</option>";
@@ -268,3 +269,8 @@ checkMaintenanceMode();
 );
 
 </script>
+
+
+<?php 
+ob_end_flush();
+?>

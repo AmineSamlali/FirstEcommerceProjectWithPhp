@@ -36,7 +36,7 @@
                 </tr>
                 <?php 
                 
-                $data = $conn->prepare("SELECT * FROM shop.categorys ORDER BY `id` DESC");
+                $data = $conn->prepare("SELECT * FROM categorys ORDER BY `id` DESC");
                 $data->execute();
             
                 foreach($data as $col){
@@ -270,7 +270,7 @@
 <script>
 checkFileds('#categoryName', 0, 'ajax_check.php', 'btnAdd', 'editeCategoryStatus', {
     fieldName: 'Name',
-    tableName: 'shop.categorys'
+    tableName: 'categorys'
 });
 
 let categoryId = '';

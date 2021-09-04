@@ -1,66 +1,66 @@
-$(function () {
+$(function() {
 
-	'use strict';
+    'use strict';
 
-	// Switch Between Login & Signup
+    // Switch Between Login & Signup
 
-	$('.login-page h1 span').click(function () {
+    $('.login-page h1 span').click(function() {
 
-		$(this).addClass('selected').siblings().removeClass('selected');
+        $(this).addClass('selected').siblings().removeClass('selected');
 
-		$('.login-page form').hide();
+        $('.login-page form').hide();
 
-		$('.' + $(this).data('class')).fadeIn(100);
+        $('.' + $(this).data('class')).fadeIn(100);
 
-	});
+    });
 
-	// Trigger The Selectboxit
+    // Trigger The Selectboxit
 
-	$("select").selectBoxIt({
+    // $("select").selectBoxIt({
 
-		autoWidth: false
+    //     autoWidth: false,
 
-	});
+    // });
 
-	// Hide Placeholder On Form Focus
+    // Hide Placeholder On Form Focus
 
-	$('[placeholder]').focus(function () {
+    $('[placeholder]').focus(function() {
 
-		$(this).attr('data-text', $(this).attr('placeholder'));
+        $(this).attr('data-text', $(this).attr('placeholder'));
 
-		$(this).attr('placeholder', '');
+        $(this).attr('placeholder', '');
 
-	}).blur(function () {
+    }).blur(function() {
 
-		$(this).attr('placeholder', $(this).attr('data-text'));
+        $(this).attr('placeholder', $(this).attr('data-text'));
 
-	});
+    });
 
-	// Add Asterisk On Required Field
+    // Add Asterisk On Required Field
 
-	$('input').each(function () {
+    $('input').each(function() {
 
-		if ($(this).attr('required') === 'required') {
+        if ($(this).attr('required') === 'required') {
 
-			$(this).after('<span class="asterisk">*</span>');
+            $(this).after('<span class="asterisk">*</span>');
 
-		}
+        }
 
-	});
+    });
 
-	// Confirmation Message On Button
+    // Confirmation Message On Button
 
-	$('.confirm').click(function () {
+    $('.confirm').click(function() {
 
-		return confirm('Are You Sure?');
+        return confirm('Are You Sure?');
 
-	});
+    });
 
-	$('.live').keyup(function () {
+    $('.live').keyup(function() {
 
-		$($(this).data('class')).text($(this).val());
+        $($(this).data('class')).text($(this).val());
 
-	});
+    });
 
 });
 

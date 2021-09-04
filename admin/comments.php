@@ -33,14 +33,14 @@
                 <?php 
                 $connection = $conn->prepare("SELECT
                         comments.*,
-                            shop.users.username,
-                            shop.products.Name,
-                            shop.products.product_id
+                            users.username,
+                            products.Name,
+                            products.product_id
                         FROM
-                            shop.comments
-                        INNER JOIN shop.users 
+                            comments
+                        INNER JOIN users 
                         ON users.user_id = comments.added_by
-                        INNER JOIN shop.products
+                        INNER JOIN products
                         ON products.product_id = comments.item_id
                         ");
                 $connection->execute();

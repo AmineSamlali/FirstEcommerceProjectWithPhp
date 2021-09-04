@@ -1,4 +1,5 @@
 <?php 
+    ob_start();
 	session_start();
     session_regenerate_id();
 
@@ -25,7 +26,7 @@ checkMaintenanceMode();
             $username = clean($_POST['username']);
             $password = clean($_POST['password']);
             if (strlen($_POST['username']) > 0 && strlen($_POST['password']) > 0) {
-                    $connection = $conn->prepare("SELECT user_id ,username, password , full_name ,registration_date ,  email,Image,group_id FROM shop.users WHERE username = ? AND password = ? AND trust_status = 1");
+                    $connection = $conn->prepare("SELECT user_id ,username, password , full_name ,registration_date ,  email,Image,group_id FROM users WHERE username = ? AND password = ? AND trust_status = 1");
                     $connection->execute([$username , sha1($password)]);
                     if($connection->rowCount()){
                         $data = $connection->fetch();
@@ -60,9 +61,9 @@ checkMaintenanceMode();
             $fullName   = clean($_POST['full_name']);
             if(checkIssetFields($_POST , ['username','password','password2','email','full_name'])){
                 if (strlen($username) >= 8 and strlen($password) >= 8 and strlen($password2) >= 8) {
-                    if (checkField('shop.users', 'username', ['filed_name'=>'username','value'=>clean($username)]) === 0) {
+                    if (checkField('users', 'username', ['filed_name'=>'username','value'=>clean($username)]) === 0) {
                         if ($password === $password2) {
-                            $connection = $conn->prepare('INSERT INTO shop.users(username,password,full_name,email) VALUES(?,?,?,?)');
+                            $connection = $conn->prepare('INSERT INTO users(username,password,full_name,email) VALUES(?,?,?,?)');
                             $connection->execute([$username , sha1($password) , $fullName , $email]);
                             $errorMsg = 'Congrats You\'r Account has Been Created';
                         }
@@ -156,7 +157,7 @@ checkMaintenanceMode();
 <script>
 checkFileds('#userCheck', 8, 'admin/ajax_check.php', 'btnAdd', 'usernameStatus', {
     fieldName: 'username',
-    tableName: 'shop.users'
+    tableName: 'users'
 });
 
 
@@ -164,3 +165,5 @@ $.getJSON("https://api.ipify.org?format=json", function(data) {
     document.getElementById('user_ip').value = data.ip;
 })
 </script>
+
+<?php ob_end_flush(); ?>

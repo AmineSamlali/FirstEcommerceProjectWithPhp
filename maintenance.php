@@ -1,7 +1,7 @@
 <?php
-// <?php echo fetchMyColumn('email','shop.settings','id=1','data','One')['email'] >
+// <?php echo fetchMyColumn('email','settings','id=1','data','One')['email'] >
   include 'admin/connect.php';
-  $connection = $conn->prepare("SELECT * FROM shop.settings WHERE id = 1");
+  $connection = $conn->prepare("SELECT * FROM settings WHERE id = 1");
   $connection->execute();
   $data = $connection->fetch();
   
